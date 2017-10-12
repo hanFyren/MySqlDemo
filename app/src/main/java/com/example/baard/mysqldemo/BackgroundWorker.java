@@ -218,7 +218,7 @@ public class BackgroundWorker extends AsyncTask <String, Void, String> {
     @Override
     protected void onPostExecute(String aVoid) {
 
-        /*if (aVoid.matches("\\d+")){ //##### om aVoid inneholder en int, kjøres denne if'en
+        if (aVoid.matches("\\d+")){ //##### om aVoid inneholder en int, kjøres denne if'en
 
             //##### Starter koble til, sender bruker ID #####  !(aVoid).equals("Kunne ikke logge inn")  !(aVoid).equals("Data Registrert")
 
@@ -227,14 +227,8 @@ public class BackgroundWorker extends AsyncTask <String, Void, String> {
             intent.putExtra("Bruker_ID",aVoid.toString());
             context.startActivity(intent);
 
-        }*/
-
-        if (aVoid =="Login ok"){
-            Intent intent = new Intent(this.context , KobleTil.class);
-            //intent.putExtra("Bruker_ID",aVoid.toString());
-            context.startActivity(intent);
-
         }
+
 
         if(aVoid == "Logg ok"){
             Log.i("*******","BCKGRNDWRKR I RIKTIG IF, aVoid: "+aVoid);
