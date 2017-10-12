@@ -42,4 +42,8 @@ public class MainActivity extends AppCompatActivity {
        startActivity(new Intent(this, Registrer.class)); //starter Register aktiviteten
     }
 
+    public void testGIT(){
+        int test  = 1;
+    }
+
 }
