@@ -30,7 +30,8 @@ public class Logge extends AppCompatActivity {
     public TextView tv_EDR, tv_HR, tv_BVP, tv_aks_x, tv_aks_y, tv_aks_z;
     public Button stopp;
     public SeekBar stress;
-    public String ID,forste,bruker_ID;
+    public String ID,bruker_ID;
+    public Boolean forste;
 
     private Timer timer;
     private TimerTask timerTask;
@@ -49,7 +50,7 @@ public class Logge extends AppCompatActivity {
         ID = getIntent().getStringExtra("ID");
         bruker_ID = getIntent().getStringExtra("Bruker_ID");
         fortsett = false;
-        forste = "true";
+        forste = true;
         //context=this;
 
         super.onCreate(savedInstanceState);
@@ -138,7 +139,7 @@ public class Logge extends AppCompatActivity {
         Double hjelp;
         int stressint;
 
-        String type = "logge";
+        String type = "forste";
 
 
         hjelp=  (100* (4.5*randtall.nextDouble()) )  ;
@@ -183,11 +184,22 @@ public class Logge extends AppCompatActivity {
 
         Log.i("*******","KALLER BCKGRNDWRKR");
 
+        if (forste){
 
-        BackgroundWorker backgroundworker = new BackgroundWorker(this);
-        backgroundworker.execute(type, EDR, HR, BVP, aks_x, aks_y, aks_z, ID, forste, bruker_ID);
+            BackgroundWorker backgroundworker1 = new BackgroundWorker(this);
+            backgroundworker1.execute(type,ID, bruker_ID);
 
-        forste = "false";
+
+            forste = false;
+        }
+
+        type="logge";
+
+            BackgroundWorker backgroundworker = new BackgroundWorker(this);
+            backgroundworker.execute(type, EDR, HR, BVP, aks_x, aks_y, aks_z, ID, bruker_ID);
+
+
+
 
         Log.i("*******"," BACKGROUNDWORKER FERDIG *************");
 

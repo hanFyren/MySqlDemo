@@ -47,7 +47,7 @@ public class BackgroundWorker extends AsyncTask <String, Void, String> {
         String login_url = "http://stressapp.no/login.php";
         String reg_url = "http://stressapp.no/registrering.php";
         String logge_url = "http://stressapp.no/logge.php";
-        String sesjon_slutt_url = "http://stressapp.no/sesjon.php";
+        String forste_sesjon_url = "http://stressapp.no/forste_sesjon.php";
         if (type.equals("login")) {
             try {
                 String brukernavn = params[1];
@@ -79,6 +79,8 @@ public class BackgroundWorker extends AsyncTask <String, Void, String> {
                 bufferedReader.close();
                 inputStream.close();
                 httpURLConnection.disconnect();
+
+                Log.i("*******","LOGIN GJENNOMFØRT, RESULT: "+result);
                 return result;
 
 
@@ -136,6 +138,69 @@ public class BackgroundWorker extends AsyncTask <String, Void, String> {
 
         }
 
+        else if (type.equals("forste"))
+        {
+            Log.i("*******","BKGRNDWRKER FORSTE == TRUE");
+            try{
+
+                String ID = params[1];
+                String bruker_ID = params[2];
+
+                URL url= new URL(forste_sesjon_url);
+
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                httpURLConnection.setDoInput(true);
+
+                OutputStream outputstream = httpURLConnection.getOutputStream();
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputstream, "UTF-8"));
+
+                String postData =
+                                URLEncoder.encode("ID","UTF-8")+"="+URLEncoder.encode(ID,"UTF-8")+"&"+
+                                URLEncoder.encode("Bruker_ID","UTF-8")+"="+URLEncoder.encode(bruker_ID,"UTF-8");
+
+                Log.i("*******","I forste, URL connections oppretett. string postdata: "+postData);
+
+
+                bufferedWriter.write(postData);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                outputstream.close();
+
+                Log.i("*******","i forste, outputstream lukket");
+
+                InputStream inputStream= httpURLConnection.getInputStream();
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
+
+                Log.i("*******","i forste, inputstream lukket");
+
+                String result="";
+                String line;
+
+                while ((line = bufferedReader.readLine()) != null){
+                    result +=line;
+                }
+
+                Log.i("********","Første sesjon kjørt, result: "+result);
+
+                bufferedReader.close();
+                inputStream.close();
+                httpURLConnection.disconnect();
+
+                String r = "forste sesjon ok";
+                return r;
+
+            } catch (MalformedURLException e) {
+                Log.i("*******","Catch i forste, malformed URL");
+                e.printStackTrace();
+            } catch (IOException e) {
+                Log.i("********","Catch i forste, io Exception");
+                e.printStackTrace();
+            }
+
+        }
+
         else if(type.equals("logge")){
             Log.i("**********"," BACKGROUNDWORKER LOGGE *************");
             try {
@@ -146,8 +211,9 @@ public class BackgroundWorker extends AsyncTask <String, Void, String> {
                 String aks_y= params[5];
                 String aks_z= params[6];
                 String ID= params[7];
-                String forste = params[8];
-                String bruker_ID = params[9];
+                String bruker_ID = params[8];
+
+                //#####    Skriver data til databasen   #####
 
                 URL url= new URL(logge_url);
                 HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
@@ -165,13 +231,8 @@ public class BackgroundWorker extends AsyncTask <String, Void, String> {
                         URLEncoder.encode("aks_y","UTF-8")+"="+URLEncoder.encode(aks_y,"UTF-8")+"&"+
                         URLEncoder.encode("aks_z","UTF-8")+"="+URLEncoder.encode(aks_z,"UTF-8")+"&"+
                         URLEncoder.encode("ID","UTF-8")+"="+URLEncoder.encode(ID,"UTF-8")+"&"+
-                        URLEncoder.encode("Forste","UTF-8")+"="+URLEncoder.encode(forste,"UTF-8")+"&"+
                         URLEncoder.encode("Bruker_ID","UTF-8")+"="+URLEncoder.encode(bruker_ID,"UTF-8");
 
-                if (forste=="true")
-                {
-                    Log.i("*******","BKGRNDWRKER FORSTE == TRUE");
-                }
 
                 bufferedWriter.write(postData);
                 bufferedWriter.flush();
@@ -189,11 +250,11 @@ public class BackgroundWorker extends AsyncTask <String, Void, String> {
                 inputStream.close();
                 httpURLConnection.disconnect();
 
-                //##### OPPRETTER FØRSTE DEL AV SESJON I PHP#####
-
                 Log.i("*******","BAKGRNDWRKR KJØRT LOGGE, RESULT: "+result);
 
-                return "Logg ok";
+                String r="Logg ok";
+
+                return r;
 
 
         }
@@ -230,11 +291,11 @@ public class BackgroundWorker extends AsyncTask <String, Void, String> {
         }
 
 
-        if(aVoid == "Logg ok"){
-            Log.i("*******","BCKGRNDWRKR I RIKTIG IF, aVoid: "+aVoid);
+        else if(aVoid == "Logg ok"){
+            Log.i("*******","BCKGRNDWRKR I IF LOGG OK , aVoid: "+aVoid);
         }
 
-        else if(!(aVoid).equals("Data Registrert")){
+        else if(!(aVoid).equals("Data Registrert") && !(aVoid).equals("forste sesjon ok")){
             alertDialog.setMessage(aVoid);
             alertDialog.show();
         }
