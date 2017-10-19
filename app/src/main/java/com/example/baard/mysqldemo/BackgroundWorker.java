@@ -48,6 +48,7 @@ public class BackgroundWorker extends AsyncTask <String, Void, String> {
         String reg_url = "http://stressapp.no/registrering.php";
         String logge_url = "http://stressapp.no/logge.php";
         String forste_sesjon_url = "http://stressapp.no/forste_sesjon.php";
+        String siste_url = "http://stressapp.no/siste_sesjon.php";
         if (type.equals("login")) {
             try {
                 String brukernavn = params[1];
@@ -266,8 +267,76 @@ public class BackgroundWorker extends AsyncTask <String, Void, String> {
         }
         }
 
+        else if(type.equals("siste")){
+            Log.i("**********"," BACKGROUNDWORKER SISTE *************");
+            try {
+                String sensor_ID=params[1];
+
+
+                //#####    Skriver data til databasen   #####
+
+                URL url= new URL(siste_url);
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+
+                Log.i("**********"," SISTE  Opprettet URL ");
+
+                //#####     NETTOPP KILIPPET INN    #####
+
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                httpURLConnection.setDoInput(true);
+
+                Log.i("**********"," SISTE  Poste funksjon opprettet ");
+
+                OutputStream outputstream = httpURLConnection.getOutputStream();
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputstream, "UTF-8"));
+
+                String postData = URLEncoder.encode("sensor_ID","UTF-8")+"="+URLEncoder.encode(sensor_ID,"UTF-8");
+
+                Log.i("**********"," SISTE  outputstream starter ");
+
+                bufferedWriter.write(postData);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                outputstream.close();
+
+                Log.i("**********"," SISTE  outputstream ferdig");
+
+                //#####     NETTOPP KLIPPET INN     #####
+
+
+                InputStream inputStream= httpURLConnection.getInputStream();
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
+
+                Log.i("**********"," SISTE  Inputstream ferdig ");
+
+                String result="";
+                String line;
+                while ((line = bufferedReader.readLine()) != null){
+                    result +=line;
+                }
+                bufferedReader.close();
+                inputStream.close();
+                httpURLConnection.disconnect();
+
+                Log.i("*******","BAKGRNDWRKR KJØRT SISTE, RESULT: "+result);
+
+                String r="siste ok";
+
+                return r;
+            }
+            catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         return null;
     }
+
+
 
     @Override
     protected void onPreExecute() {
@@ -276,6 +345,8 @@ public class BackgroundWorker extends AsyncTask <String, Void, String> {
 
     }
 
+
+    //#######   HER MÅ DET RYDDES OPP!!!    #####
     @Override
     protected void onPostExecute(String aVoid) {
 
@@ -295,7 +366,7 @@ public class BackgroundWorker extends AsyncTask <String, Void, String> {
             Log.i("*******","BCKGRNDWRKR I IF LOGG OK , aVoid: "+aVoid);
         }
 
-        else if(!(aVoid).equals("Data Registrert") && !(aVoid).equals("forste sesjon ok")){
+        else if(!(aVoid).equals("Data Registrert") && !(aVoid).equals("forste sesjon ok") && !(aVoid).equals("siste ok")){
             alertDialog.setMessage(aVoid);
             alertDialog.show();
         }

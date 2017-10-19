@@ -28,7 +28,7 @@ import java.util.TimerTask;
 public class Logge extends AppCompatActivity {
 
     public TextView tv_EDR, tv_HR, tv_BVP, tv_aks_x, tv_aks_y, tv_aks_z;
-    public Button stopp;
+    public Button stopp, avslutt;
     public SeekBar stress;
     public String ID,bruker_ID;
     public Boolean forste;
@@ -63,6 +63,7 @@ public class Logge extends AppCompatActivity {
         tv_aks_y = (TextView) findViewById(R.id.textViewAksY);
         tv_aks_z = (TextView) findViewById(R.id.textViewAksZ);
         stopp = (Button) findViewById(R.id.buttonStopp);
+        avslutt = (Button) findViewById(R.id.buttonAvslutt);
         stress = (SeekBar) findViewById(R.id.seekBarStress);
 
         stress.setClickable(false);
@@ -79,6 +80,14 @@ public class Logge extends AppCompatActivity {
                     startTimer();
                     fortsett = false;
                 }
+            }
+        });
+
+        avslutt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                onDestroy();
             }
         });
 
@@ -99,6 +108,11 @@ public class Logge extends AppCompatActivity {
     @Override
     protected void onDestroy(){
         super.onDestroy();
+
+        String type ="siste";
+        BackgroundWorker backgroundworker1 = new BackgroundWorker(this);
+        backgroundworker1.execute(type, ID);
+
         startActivity(new Intent(this, KobleTil.class));
     }
 
