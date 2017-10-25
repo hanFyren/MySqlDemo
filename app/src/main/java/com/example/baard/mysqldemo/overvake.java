@@ -30,7 +30,7 @@ public class overvake extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        Log.i("********", " LOGGE initiert ************");
+        Log.i("********", " OVERVÅK initiert ************");
         ID = getIntent().getStringExtra("ID");
         fortsett = false;
         //context=this;
@@ -53,7 +53,7 @@ public class overvake extends AppCompatActivity {
         stopp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (fortsett == false) {
+                if (!fortsett) {
                     stopTimerTask();
                     fortsett = true;
                 }
@@ -68,7 +68,7 @@ public class overvake extends AppCompatActivity {
     @Override
     protected void onPause(){
         super.onPause();
-        //stopTimerTask();
+        stopTimerTask();
     }
 
     @Override
@@ -111,41 +111,17 @@ public class overvake extends AppCompatActivity {
 
     public void logge(){    //hele denne funksjonen er wastable
         Random randtall = new Random();
-        Double hjelp;
-        int stressint;
+        Double hjelp=3.0;
+        int stressint=3;
 
-        String type = "logge";
+        String type = "overvak";
 
 
-        hjelp=  (100* (4.5*randtall.nextDouble()) )  ;
-        hjelp = Double.valueOf(Math.round(hjelp));
-        stressint=hjelp.intValue();
-        hjelp= hjelp/100;
         String EDR = Double.toString(hjelp);
-
-        hjelp=  (100* (50+(230-50)*randtall.nextDouble()) )  ;
-        hjelp = Double.valueOf(Math.round(hjelp));
-        hjelp= hjelp/100;
         String HR = Double.toString(hjelp);
-
-        hjelp=  (100* (1+(20-1)*randtall.nextDouble()) )  ;
-        hjelp = Double.valueOf(Math.round(hjelp));
-        hjelp= hjelp/100;
         String BVP = Double.toString(hjelp);
-
-        hjelp=  (100* (10*randtall.nextDouble()) )  ;
-        hjelp = Double.valueOf(Math.round(hjelp));
-        hjelp= hjelp/100;
         String aks_x = Double.toString(hjelp);
-
-        hjelp=  (100* (10*randtall.nextDouble()) )  ;
-        hjelp = Double.valueOf(Math.round(hjelp));
-        hjelp= hjelp/100;
         String aks_y = Double.toString(hjelp);
-
-        hjelp=  (100* (10*randtall.nextDouble()) )  ;
-        hjelp = Double.valueOf(Math.round(hjelp));
-        hjelp= hjelp/100;
         String aks_z = Double.toString(hjelp);
 
         stress.setProgress(stressint);

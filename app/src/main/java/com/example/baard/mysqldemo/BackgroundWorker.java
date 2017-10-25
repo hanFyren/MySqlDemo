@@ -270,7 +270,8 @@ public class BackgroundWorker extends AsyncTask <String, Void, String> {
         else if(type.equals("siste")){
             Log.i("**********"," BACKGROUNDWORKER SISTE *************");
             try {
-                String sensor_ID=params[1];
+                //String sensor_ID=params[1];
+                String bruker_ID=params[2];
 
 
                 //#####    Skriver data til databasen   #####
@@ -291,7 +292,7 @@ public class BackgroundWorker extends AsyncTask <String, Void, String> {
                 OutputStream outputstream = httpURLConnection.getOutputStream();
                 BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputstream, "UTF-8"));
 
-                String postData = URLEncoder.encode("sensor_ID","UTF-8")+"="+URLEncoder.encode(sensor_ID,"UTF-8");
+                String postData = URLEncoder.encode("bruker_ID","UTF-8")+"="+URLEncoder.encode(bruker_ID,"UTF-8");
 
                 Log.i("**********"," SISTE  outputstream starter ");
 

@@ -21,7 +21,7 @@ import java.util.Random;
 public class KobleTil extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     private Spinner spinner;
-    private Button koble, logge, stopp;
+    private Button koble, logge, overvaak;
     private static final String[] paths = {"Ingen enhet", "E4 1", "E4 2", "E4 3"};
     String mac_1 = "00ABCDEF";
     String mac_2 = "00AACDEF";
@@ -41,6 +41,8 @@ public class KobleTil extends AppCompatActivity implements AdapterView.OnItemSel
         spinner = (Spinner) findViewById(R.id.spinner);
         koble = (Button) findViewById(R.id.buttonKobletil);
         logge = (Button) findViewById(R.id.buttonStartLogging);
+        overvaak = (Button) findViewById(R.id.buttonOvervak);
+
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(KobleTil.this, android.R.layout.simple_spinner_item, paths);
 
@@ -48,6 +50,11 @@ public class KobleTil extends AppCompatActivity implements AdapterView.OnItemSel
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
         logge.setEnabled(false);
+
+            if (bruker_ID=="139") {
+        overvaak.setClickable(true);
+        }
+        else overvaak.setClickable(false);
 
     }
 

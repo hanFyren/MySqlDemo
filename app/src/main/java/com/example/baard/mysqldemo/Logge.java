@@ -33,6 +33,8 @@ public class Logge extends AppCompatActivity {
     public String ID,bruker_ID;
     public Boolean forste;
 
+    public Context context;
+
     private Timer timer;
     private TimerTask timerTask;
     final Handler handler = new Handler();
@@ -49,9 +51,10 @@ public class Logge extends AppCompatActivity {
         Log.i("********", " LOGGE initiert ************");
         ID = getIntent().getStringExtra("ID");
         bruker_ID = getIntent().getStringExtra("Bruker_ID");
+        Log.i("*******","LOGGE HENTER EKSTRA VARIABLER. ID: "+ID+" Bruker_ID: "+bruker_ID);
         fortsett = false;
         forste = true;
-        //context=this;
+        context=this;
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_logge);
@@ -72,7 +75,7 @@ public class Logge extends AppCompatActivity {
         stopp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (fortsett == false) {
+                if (!fortsett) {
                     stopTimerTask();
                     fortsett = true;
                 }
@@ -87,7 +90,11 @@ public class Logge extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                onDestroy();
+                String type ="siste";
+                BackgroundWorker backgroundworker1 = new BackgroundWorker(context);
+                backgroundworker1.execute(type, ID, bruker_ID);
+
+                startActivity(new Intent(context, MainActivity.class));
             }
         });
 
@@ -109,11 +116,7 @@ public class Logge extends AppCompatActivity {
     protected void onDestroy(){
         super.onDestroy();
 
-        String type ="siste";
-        BackgroundWorker backgroundworker1 = new BackgroundWorker(this);
-        backgroundworker1.execute(type, ID);
-
-        startActivity(new Intent(this, KobleTil.class));
+        startActivity(new Intent(this, MainActivity.class));
     }
 
     public void startTimer(){
@@ -146,9 +149,9 @@ public class Logge extends AppCompatActivity {
         };
     }
 
-    //NYE FUNKSJONER HER
 
-    public void logge(){    //hele denne funksjonen er wastable
+
+    public void logge(){
         Random randtall = new Random();
         Double hjelp;
         int stressint;
