@@ -130,7 +130,7 @@ public class Logge extends AppCompatActivity {
         startTimerTask();
         timer.schedule(timerTask, 1000, 1000);
     }
-
+//##### Når timertask stoppes, stopper også timer
     public void stopTimerTask(){
         if (timer != null){
             timer.cancel();
@@ -139,7 +139,6 @@ public class Logge extends AppCompatActivity {
     }
 //##### TimerTask kjører logge() hvert sekund
     public void startTimerTask(){
-        Log.i("*******","TIMER TASK STARTET");
         timerTask = new TimerTask() {
             @Override
             public void run() {
@@ -205,8 +204,6 @@ public class Logge extends AppCompatActivity {
         tv_aks_y.setText("Aks y: "+aks_y);
         tv_aks_z.setText("Aks z: "+aks_z);
 
-        Log.i("*******","KALLER BCKGRNDWRKR");
-
 //##### Sørger for å opprette første del av sesjoner
         if (forste){
             BackgroundWorker backgroundworker1 = new BackgroundWorker(this);
@@ -214,16 +211,9 @@ public class Logge extends AppCompatActivity {
             forste = false;
         }
 
-//##### Staretr
+//##### Starter Backgroundworker med parametere fra måling (genererte tall)
         type="logge";
-
-            BackgroundWorker backgroundworker = new BackgroundWorker(this);
-            backgroundworker.execute(type, EDR, HR, BVP, aks_x, aks_y, aks_z, ID, bruker_ID);
-
-
-
-
-        Log.i("*******"," BACKGROUNDWORKER FERDIG *************");
-
+        BackgroundWorker backgroundworker = new BackgroundWorker(this);
+        backgroundworker.execute(type, EDR, HR, BVP, aks_x, aks_y, aks_z, ID, bruker_ID);
     }
 }

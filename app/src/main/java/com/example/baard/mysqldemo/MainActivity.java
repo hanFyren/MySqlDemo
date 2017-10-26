@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//#####     Binner variabler til elementer fra XML
+//##### Knytter XML elementer til Java variabler
         Brukernavn_et = (EditText)findViewById(R.id.editTextBrukernavn);
         Passord_et = (EditText)findViewById(R.id.editTextPassord);
 

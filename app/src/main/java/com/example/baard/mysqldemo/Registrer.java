@@ -15,7 +15,7 @@ import android.widget.Toast;
 
 
 public class Registrer extends AppCompatActivity {
-
+//##### Deklarerer globale variabler
     EditText fornavn, etternavn, brukernavn, passord1, passord2;
     String str_fornavn, str_etternavn, str_brukernavn, str_passord1, str_passord2;
     Button registrer;
@@ -23,6 +23,7 @@ public class Registrer extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//##### knytter XML elementer til Java variabler
         setContentView(R.layout.activity_registrer);
         fornavn=(EditText)findViewById(R.id.editTextFornavn);
         etternavn=(EditText)findViewById(R.id.editTextEtternavn);
@@ -40,14 +41,11 @@ public class Registrer extends AppCompatActivity {
         str_passord2=passord2.getText().toString();
         String type = "reg";
 
-
-
+//##### Enkle kriterier for passord
         if(!str_passord1.equals(str_passord2)){
-
             Toast.makeText(this, "Passordene stemmer ikke overens, forsøk igjen", Toast.LENGTH_SHORT).show();
             passord1.setText("");
             passord2.setText("");
-
         }
         else if (str_passord1.length() < 5)
         {
@@ -55,11 +53,10 @@ public class Registrer extends AppCompatActivity {
             passord1.setText("");
             passord2.setText("");
         }
-
+//##### Starter Backgroundworker, sender paramaetere til DB
         else {
             BackgroundWorker backgroundworker = new BackgroundWorker(this);
             backgroundworker.execute(type, str_fornavn, str_etternavn, str_brukernavn, str_passord1);
         }
-
     }
 }
