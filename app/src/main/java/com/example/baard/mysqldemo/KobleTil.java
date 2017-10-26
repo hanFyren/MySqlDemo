@@ -15,13 +15,16 @@ import java.util.Random;
 
 //##### TOD DO: #####
 //#####         Implementere oppkobling av BT                       #####
-//#####         plukke opp og videresende bruker ID for sessions    #####
-//#####
+//*****         plukke opp og videresende bruker ID for sessions    *****
+//#####         Kommenter                                           #####
+//#####         Rydde opp - ikke hensiktsmessig før ferdigstilling  #####
 
 public class KobleTil extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
+//  ##### Deklarerer Globale variabler
+
     private Spinner spinner;
-    private Button koble, logge, overvaak;
+    private Button  logge, overvaak;
     private static final String[] paths = {"Ingen enhet", "E4 1", "E4 2", "E4 3"};
     String mac_1 = "00ABCDEF";
     String mac_2 = "00AACDEF";
@@ -35,32 +38,32 @@ public class KobleTil extends AppCompatActivity implements AdapterView.OnItemSel
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_koble_til);
 
+//##### Henter Bruker_ID fra Backgroundworker
         bruker_ID= getIntent().getStringExtra("Bruker_ID");
 
-
+//##### knytter XML elementer til Java variabler
         spinner = (Spinner) findViewById(R.id.spinner);
-        koble = (Button) findViewById(R.id.buttonKobletil);
         logge = (Button) findViewById(R.id.buttonStartLogging);
         overvaak = (Button) findViewById(R.id.buttonOvervak);
 
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(KobleTil.this, android.R.layout.simple_spinner_item, paths);
+//##### Setter opp Spinner (Rullegardinmeny). innholder elementer fra paths, deklarert som global variabel
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(KobleTil.this, android.R.layout.simple_spinner_item, paths);
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
+//***** logge kan ikke trykkes før element fra spinner er valgt og koble til denne har lyktes
         logge.setEnabled(false);
 
-            if (bruker_ID=="139") {
-        overvaak.setClickable(true);
+//***** Kun godkjente bruker_ID skal kunne overvåke andre brukere, overvaak er derfor deaktivert som standard i XML
+        if (bruker_ID.equals("139")) {
+        overvaak.setEnabled(true);
         }
-        else overvaak.setClickable(false);
-
     }
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-
+//##### switch for valg i spinner
         switch (position) {
             case 0:
                 mac_con = "false";
@@ -83,16 +86,23 @@ public class KobleTil extends AppCompatActivity implements AdapterView.OnItemSel
     }
 
     public void OnOppkobling(View view) {
+//##### avgjør om enhet er koblet til. Om dette er tilfellet kan logging starte
         if (mac_con.equals("false")) {
             Toast.makeText(this, "Venligst velg en enhet du ønsker å koble til", Toast.LENGTH_SHORT).show();
 
         } else {
+
+            //##### TO DO   #####
+            //##### Legge til oppkobling mot faktisk enhet
+
             Toast.makeText(this, "Kobler til enhet: " + mac_con, Toast.LENGTH_SHORT).show();
             logge.setEnabled(true);
         }
     }
 
     public void OnLogge(View view) {
+//##### Funksjon om Logge trykkes.
+        // starter aktiviteten Logge, sender argumentene mac_con og bruker_ID
         Log.i("**********"," TRYKKET KNAPP LOGGE *************");
         Intent intent = new Intent(this, Logge.class);
         intent.putExtra("ID", mac_con);
@@ -101,6 +111,8 @@ public class KobleTil extends AppCompatActivity implements AdapterView.OnItemSel
     }
 
     public void OnOvervak(){
+//##### Funksjon om Overvåk trykket
+//##### Foreløbig ikke implementert
         Log.i("*****","OVERVÅK TRYKKET");
         String sesjon = "";
 
@@ -108,6 +120,5 @@ public class KobleTil extends AppCompatActivity implements AdapterView.OnItemSel
         Intent intent =new Intent(this, overvake.class);
         intent.putExtra("sesjon",sesjon);
         startActivity(intent);
-
     }
 }

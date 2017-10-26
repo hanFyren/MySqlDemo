@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
-
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -23,56 +22,55 @@ import java.util.TimerTask;
 //#####         Vatte inn data fra BT                                               #####
 //#####         Implementere sessions                                               #####
 //#####         Kommentere                                                          #####
-//#####         kartlegge ressursbruk, burde dette vært en under-funskjon?           #####
+//#####         kartlegge ressursbruk, burde dette vært en under-funskjon?          #####
+//#####         Beholde BT kobling ved avslutt                                      #####
 
 public class Logge extends AppCompatActivity {
+//##### Deklarerer globale variabler
 
     public TextView tv_EDR, tv_HR, tv_BVP, tv_aks_x, tv_aks_y, tv_aks_z;
-    public Button stopp, avslutt;
+    public Button pause, avslutt;
     public SeekBar stress;
     public String ID,bruker_ID;
     public Boolean forste;
-
-    public Context context;
 
     private Timer timer;
     private TimerTask timerTask;
     final Handler handler = new Handler();
 
-
     public boolean fortsett;
-
-    //Context context;
-
+    public Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_logge);
         Log.i("********", " LOGGE initiert ************");
+
+//##### Henter variabler fra KobleTil og definerer globale variabler
         ID = getIntent().getStringExtra("ID");
         bruker_ID = getIntent().getStringExtra("Bruker_ID");
-        Log.i("*******","LOGGE HENTER EKSTRA VARIABLER. ID: "+ID+" Bruker_ID: "+bruker_ID);
         fortsett = false;
         forste = true;
         context=this;
-
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_logge);
-
+//##### Knytter XML elemnter til java variabler
         tv_EDR = (TextView) findViewById(R.id.textViewEDR);
         tv_HR = (TextView) findViewById(R.id.textViewHR);
         tv_BVP = (TextView) findViewById(R.id.textViewBVP);
         tv_aks_x = (TextView) findViewById(R.id.textViewAksX);
         tv_aks_y = (TextView) findViewById(R.id.textViewAksY);
         tv_aks_z = (TextView) findViewById(R.id.textViewAksZ);
-        stopp = (Button) findViewById(R.id.buttonStopp);
+        pause = (Button) findViewById(R.id.buttonStopp);
         avslutt = (Button) findViewById(R.id.buttonAvslutt);
         stress = (SeekBar) findViewById(R.id.seekBarStress);
 
+//***** seekBarStress skal vise informasjon, ikke hente. Er derfor ikke klikkbar.
+//##### Setter rekkevidde til seekBarStress
         stress.setClickable(false);
         stress.setMax(600);
 
-        stopp.setOnClickListener(new View.OnClickListener() {
+//##### Lytter på pause knapp starter og stopper timer-task
+        pause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!fortsett) {
@@ -86,6 +84,7 @@ public class Logge extends AppCompatActivity {
             }
         });
 
+//#####Lytter på avslutt starter Backgroundworker med argumenter
         avslutt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -94,12 +93,16 @@ public class Logge extends AppCompatActivity {
                 BackgroundWorker backgroundworker1 = new BackgroundWorker(context);
                 backgroundworker1.execute(type, ID, bruker_ID);
 
-                startActivity(new Intent(context, MainActivity.class));
+                Intent intent = new Intent(context , KobleTil.class);
+                intent.putExtra("Bruker_ID",bruker_ID);
+                context.startActivity(intent);
             }
         });
 
 
     }
+
+//##### pause og resume av aktiviteten starter og stopper timeren
     @Override
     protected void onPause(){
         super.onPause();
@@ -112,13 +115,16 @@ public class Logge extends AppCompatActivity {
         startTimer();
     }
 
+//##### onDestroy initierer KobleTil igjen
     @Override
     protected void onDestroy(){
         super.onDestroy();
-
-        startActivity(new Intent(this, MainActivity.class));
+        Intent intent = new Intent(context , KobleTil.class);
+        intent.putExtra("Bruker_ID",bruker_ID);
+        context.startActivity(intent);
     }
 
+//##### initierer Timer for TimerTask
     public void startTimer(){
         timer = new Timer();
         startTimerTask();
@@ -131,7 +137,7 @@ public class Logge extends AppCompatActivity {
             timer = null;
         }
     }
-
+//##### TimerTask kjører logge() hvert sekund
     public void startTimerTask(){
         Log.i("*******","TIMER TASK STARTET");
         timerTask = new TimerTask() {
@@ -150,7 +156,7 @@ public class Logge extends AppCompatActivity {
     }
 
 
-
+//##### sender data til backgroundworker for å lese til DB
     public void logge(){
         Random randtall = new Random();
         Double hjelp;
@@ -158,7 +164,7 @@ public class Logge extends AppCompatActivity {
 
         String type = "forste";
 
-
+//***** Generering av tilfeldige tall til implementering av BT er i orden
         hjelp=  (100* (4.5*randtall.nextDouble()) )  ;
         hjelp = Double.valueOf(Math.round(hjelp));
         stressint=hjelp.intValue();
@@ -190,8 +196,8 @@ public class Logge extends AppCompatActivity {
         hjelp= hjelp/100;
         String aks_z = Double.toString(hjelp);
 
+//##### Setter verdier synlig for brukeren
         stress.setProgress(stressint);
-
         tv_EDR.setText("EDR: "+EDR);
         tv_HR.setText("HR: "+HR);
         tv_BVP.setText("BVP: "+BVP);
@@ -201,15 +207,14 @@ public class Logge extends AppCompatActivity {
 
         Log.i("*******","KALLER BCKGRNDWRKR");
 
+//##### Sørger for å opprette første del av sesjoner
         if (forste){
-
             BackgroundWorker backgroundworker1 = new BackgroundWorker(this);
             backgroundworker1.execute(type,ID, bruker_ID);
-
-
             forste = false;
         }
 
+//##### Staretr
         type="logge";
 
             BackgroundWorker backgroundworker = new BackgroundWorker(this);

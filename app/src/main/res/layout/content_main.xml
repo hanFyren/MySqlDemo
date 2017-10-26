@@ -36,6 +36,8 @@
         app:layout_constraintVertical_bias="0.155"
         tools:hint="Passord" />
 
+    <!-- Knappenes android:onClick="..." kaller funskjon i Java-->
+
     <Button
         android:id="@+id/button"
         android:layout_width="wrap_content"
