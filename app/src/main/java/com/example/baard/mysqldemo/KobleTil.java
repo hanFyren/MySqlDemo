@@ -114,11 +114,9 @@ public class KobleTil extends AppCompatActivity implements AdapterView.OnItemSel
 //##### Funksjon om Overvåk trykket
 //##### Foreløbig ikke implementert
         Log.i("*****","OVERVÅK TRYKKET");
-        String sesjon = "";
-
 
         Intent intent =new Intent(this, overvake.class);
-        intent.putExtra("sesjon",sesjon);
+        intent.putExtra("bruker_ID",bruker_ID);
         startActivity(intent);
     }
 }
