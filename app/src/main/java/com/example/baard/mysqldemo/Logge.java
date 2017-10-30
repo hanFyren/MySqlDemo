@@ -13,6 +13,32 @@ import android.widget.TextView;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
+
+//ENDRINGER grunnet Bluetooth
+import android.Manifest;
+import android.app.ActionBar;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.DialogInterface;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
+
+import com.empatica.empalink.ConnectionNotAllowedException;
+import com.empatica.empalink.EmpaDeviceManager;
+import com.empatica.empalink.config.EmpaSensorStatus;
+import com.empatica.empalink.config.EmpaSensorType;
+import com.empatica.empalink.config.EmpaStatus;
+import com.empatica.empalink.delegate.EmpaDataDelegate;
+import com.empatica.empalink.delegate.EmpaStatusDelegate;
+//Endringer slutt
 //import java.util.logging.Handler;
 
 
@@ -163,7 +189,7 @@ public class Logge extends AppCompatActivity {
 
         String type = "forste";
 
-//***** Generering av tilfeldige tall til implementering av BT er i orden
+//***** Generering av tilfeldige tall til implementering av BT er i orden ARNaR: få inn bluetoothverdier i enkeltstringene
         hjelp=  (100* (4.5*randtall.nextDouble()) )  ;
         hjelp = Double.valueOf(Math.round(hjelp));
         stressint=hjelp.intValue();
@@ -204,7 +230,7 @@ public class Logge extends AppCompatActivity {
         tv_aks_y.setText("Aks y: "+aks_y);
         tv_aks_z.setText("Aks z: "+aks_z);
 
-//##### Sørger for å opprette første del av sesjoner
+//##### Sørger for å opprette første del av sesjoner ARNAR: Denne må være her fordi den oppretter session
         if (forste){
             BackgroundWorker backgroundworker1 = new BackgroundWorker(this);
             backgroundworker1.execute(type,ID, bruker_ID);
