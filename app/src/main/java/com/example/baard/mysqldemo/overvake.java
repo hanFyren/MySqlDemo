@@ -14,6 +14,7 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import java.io.*;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -125,6 +126,7 @@ public class overvake extends AppCompatActivity implements AdapterView.OnItemSel
     public void finne(){
         Log.i("*******","STARTER FINNE");
         String finn_url = "http://stressapp.no/aktiv.php";
+        String test="test";
 
         try {
 
@@ -132,20 +134,20 @@ public class overvake extends AppCompatActivity implements AdapterView.OnItemSel
             URL url= new URL(finn_url);
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
             httpURLConnection.setRequestMethod("POST");
-            httpURLConnection.setDoOutput(false);
+            httpURLConnection.setDoOutput(true);
             httpURLConnection.setDoInput(true);
             Log.i("*******","OPPRETTET URL: "+httpURLConnection);
-/*
+
             //#####     poster data til URL forbindelsen
             OutputStream outputstream = httpURLConnection.getOutputStream();
             BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputstream, "UTF-8"));
 
-            String postData =   URLEncoder.encode("void","UTF-8")+"="+URLEncoder.encode(".","UTF-8")+"&";
+            String postData =   URLEncoder.encode("void","UTF-8")+"="+URLEncoder.encode(test,"UTF-8")+"&";
 
             bufferedWriter.write(postData);
             bufferedWriter.flush();
             bufferedWriter.close();
-            outputstream.close();*/
+            outputstream.close();
 
 //#####     Mottar data fra URL forbindelsen
             InputStream inputStream= httpURLConnection.getInputStream();
