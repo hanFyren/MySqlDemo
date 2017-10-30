@@ -51,6 +51,8 @@ public class overvake extends AppCompatActivity implements AdapterView.OnItemSel
 
     public boolean fortsett;
 
+    //lykke til!
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
