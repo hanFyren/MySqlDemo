@@ -328,6 +328,7 @@ public class BackgroundWorker extends AsyncTask <String, Void, String> {
         else if(aVoid.equals("Kunne ikke logge inn")){
 //##### Viser dialogbopksen med en melding til brukeren
             alertDialog.setMessage(aVoid+". Venligst prøv igjen");
+            Toast.makeText(context, aVoid, Toast.LENGTH_SHORT).show();
         }
 
 //##### Ved opprettelse av bruker vellykket eller feilet

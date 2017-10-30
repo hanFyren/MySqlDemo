@@ -25,9 +25,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
+
 
 public class overvake extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
@@ -54,7 +54,7 @@ public class overvake extends AppCompatActivity implements AdapterView.OnItemSel
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        Log.i("********", " OVERVÅK initiert ************");
+        Log.i("********", " OVERVAK initiert ************");
         ID = "";
         fortsett = false;
         brukere= new String[]{};
@@ -83,51 +83,9 @@ public class overvake extends AppCompatActivity implements AdapterView.OnItemSel
         stress.setClickable(false);
         stress.setMax(600);
 
-        String finn_url = "http://stressapp.no/aktiv.php";
+        finne();
 
-        try {
-
-//#####     definerer URL forbindelse som skal både sende og motta informasjon
-            URL url= new URL(finn_url);
-            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-            httpURLConnection.setRequestMethod("POST");
-            httpURLConnection.setDoOutput(false);
-            httpURLConnection.setDoInput(true);
-//#####     Mottar data fra URL forbindelsen
-            InputStream inputStream= httpURLConnection.getInputStream();
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
-
-            String line;
-            int idTeller=0;
-            int navnTeller=0;
-            boolean navn = false;
-
-            while ((line = bufferedReader.readLine()) != null){
-
-                if (navn)
-                {
-                    navnListe[navnTeller] = line;
-                    navnTeller++;
-                    navn=false;
-                }
-                else {
-                    brukere[idTeller] = line;
-                    idTeller++;
-                    navn=true;
-                }
-            }
-            bufferedReader.close();
-            inputStream.close();
-            httpURLConnection.disconnect();
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-        //##### Setter opp Spinner (Rullegardinmeny). innholder elementer fra paths, deklarert som global variabel
+        //##### Setter opp Spinner (Rullegardinmeny). innholder elementer fra navnListe, deklarert som global variabel
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, navnListe);
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
@@ -157,6 +115,73 @@ public class overvake extends AppCompatActivity implements AdapterView.OnItemSel
                 context.startActivity(intent);
             }
         });
+
+    }
+
+    public void finne(){
+        Log.i("*******","STARTER FINNE");
+        String finn_url = "http://stressapp.no/aktiv.php";
+
+        try {
+
+//#####     definerer URL forbindelse som skal både sende og motta informasjon
+            URL url= new URL(finn_url);
+            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+            httpURLConnection.setRequestMethod("POST");
+            httpURLConnection.setDoOutput(false);
+            httpURLConnection.setDoInput(true);
+            Log.i("*******","OPPRETTET URL: "+httpURLConnection);
+/*
+            //#####     poster data til URL forbindelsen
+            OutputStream outputstream = httpURLConnection.getOutputStream();
+            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputstream, "UTF-8"));
+
+            String postData =   URLEncoder.encode("void","UTF-8")+"="+URLEncoder.encode(".","UTF-8")+"&";
+
+            bufferedWriter.write(postData);
+            bufferedWriter.flush();
+            bufferedWriter.close();
+            outputstream.close();*/
+
+//#####     Mottar data fra URL forbindelsen
+            InputStream inputStream= httpURLConnection.getInputStream();
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
+
+            String line;
+            int idTeller=0;
+            int navnTeller=0;
+            boolean navn = false;
+
+            Log.i("******","OVERVAAKE, INPUTSTREAM FOR WHILE");
+
+            while ((line = bufferedReader.readLine()) != null){
+
+                if (navn)
+                {
+                    Log.i("*******","HENTER AKTIVE, LINE: "  + line);
+                    navnListe[navnTeller] = line;
+                    navnTeller++;
+                    navn=false;
+                    Log.i("*******","HENTER AKTIVE, NAVN: "  + navnListe[navnTeller]);
+                }
+                else {
+                    brukere[idTeller] = line;
+                    idTeller++;
+                    navn=true;
+                    Log.i("*******","HENTER AKTIVE, ID: " + line + "  " + brukere[idTeller]);
+                }
+            }
+            bufferedReader.close();
+            inputStream.close();
+            httpURLConnection.disconnect();
+
+        } catch (MalformedURLException e) {
+            Log.i("*******","Catch malfomred url");
+            e.printStackTrace();
+        } catch (IOException e) {
+            Log.i("*******","Catch IO-exeption");
+            e.printStackTrace();
+        }
 
     }
 
@@ -190,7 +215,7 @@ public class overvake extends AppCompatActivity implements AdapterView.OnItemSel
                     @Override
                     public void run() {
                         // SETT INN HER
-                        Log.i("*******","TIMERTASK KALLER LOGGE");
+                        Log.i("*******","TIMERTASK KALLER henteData()");
                         henteData();
                     }
                 });
@@ -233,6 +258,8 @@ public class overvake extends AppCompatActivity implements AdapterView.OnItemSel
             int teller=0;
             while ((line = bufferedReader.readLine()) != null){
                 data[teller] +=line;
+                teller++;
+                Log.i("******","HENTER DATA: "+data[teller]);
             }
             bufferedReader.close();
             inputStream.close();

@@ -1,5 +1,6 @@
 package com.example.baard.mysqldemo;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,13 +25,14 @@ public class KobleTil extends AppCompatActivity implements AdapterView.OnItemSel
 //  ##### Deklarerer Globale variabler
 
     private Spinner spinner;
-    private Button  logge, overvaak;
+    private Button logge, overvaak;
     private static final String[] paths = {"Ingen enhet", "E4 1", "E4 2", "E4 3"};
     String mac_1 = "00ABCDEF";
     String mac_2 = "00AACDEF";
     String mac_3 = "00ABBDEF";
     String mac_con;
     String bruker_ID;
+    Context context =this;
 
 
     @Override
@@ -39,7 +41,7 @@ public class KobleTil extends AppCompatActivity implements AdapterView.OnItemSel
         setContentView(R.layout.activity_koble_til);
 
 //##### Henter Bruker_ID fra Backgroundworker
-        bruker_ID= getIntent().getStringExtra("Bruker_ID");
+        bruker_ID = getIntent().getStringExtra("Bruker_ID");
 
 //##### knytter XML elementer til Java variabler
         spinner = (Spinner) findViewById(R.id.spinner);
@@ -57,8 +59,22 @@ public class KobleTil extends AppCompatActivity implements AdapterView.OnItemSel
 
 //***** Kun godkjente bruker_ID skal kunne overvåke andre brukere, overvaak er derfor deaktivert som standard i XML
         if (bruker_ID.equals("139")) {
-        overvaak.setEnabled(true);
+            overvaak.setEnabled(true);
         }
+
+        overvaak.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                //##### Funksjon om Overvåk trykket
+//##### Foreløbig ikke implementert
+                Log.i("*****", "OVERVÅK TRYKKET");
+
+                Intent intent = new Intent(context, overvake.class);
+                intent.putExtra("bruker_ID", bruker_ID);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -103,20 +119,12 @@ public class KobleTil extends AppCompatActivity implements AdapterView.OnItemSel
     public void OnLogge(View view) {
 //##### Funksjon om Logge trykkes.
         // starter aktiviteten Logge, sender argumentene mac_con og bruker_ID
-        Log.i("**********"," TRYKKET KNAPP LOGGE *************");
+        Log.i("**********", " TRYKKET KNAPP LOGGE *************");
         Intent intent = new Intent(this, Logge.class);
         intent.putExtra("ID", mac_con);
-        intent.putExtra("Bruker_ID",bruker_ID);
+        intent.putExtra("Bruker_ID", bruker_ID);
         startActivity(intent); //starter Register aktiviteten
     }
-
-    public void OnOvervak(){
-//##### Funksjon om Overvåk trykket
-//##### Foreløbig ikke implementert
-        Log.i("*****","OVERVÅK TRYKKET");
-
-        Intent intent =new Intent(this, overvake.class);
-        intent.putExtra("bruker_ID",bruker_ID);
-        startActivity(intent);
-    }
 }
+
+
