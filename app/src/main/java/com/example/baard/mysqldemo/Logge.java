@@ -51,7 +51,7 @@ import com.empatica.empalink.delegate.EmpaStatusDelegate;
 //#####         kartlegge ressursbruk, burde dette vært en under-funskjon?          #####
 //#####         Beholde BT kobling ved avslutt                                      #####
 
-public abstract class Logge extends AppCompatActivity implements EmpaDataDelegate, EmpaStatusDelegate {
+public class Logge extends AppCompatActivity {
 //##### Deklarerer globale variabler
 
     public TextView tv_EDR, tv_HR, tv_BVP, tv_aks_x, tv_aks_y, tv_aks_z;
@@ -82,6 +82,7 @@ public abstract class Logge extends AppCompatActivity implements EmpaDataDelegat
         fortsett = false;
         forste = true;
         context=this;
+
 //##### Knytter XML elemnter til java variabler
         tv_EDR = (TextView) findViewById(R.id.textViewEDR);
         tv_HR = (TextView) findViewById(R.id.textViewHR);
@@ -128,8 +129,7 @@ public abstract class Logge extends AppCompatActivity implements EmpaDataDelegat
             }
         });
 
-        deviceManager = new EmpaDeviceManager(getApplicationContext(), this, this);
-        deviceManager.authenticateWithAPIKey("234acf07689e4d2aacfe46bf5b6a816c");
+
 
     }
 
@@ -195,6 +195,7 @@ public abstract class Logge extends AppCompatActivity implements EmpaDataDelegat
         String type = "forste";
 
 //***** Generering av tilfeldige tall til implementering av BT er i orden ARNaR: få inn bluetoothverdier i enkeltstringene
+
         hjelp=  (100* (4.5*randtall.nextDouble()) )  ;
         hjelp = Double.valueOf(Math.round(hjelp));
         stressint=hjelp.intValue();
