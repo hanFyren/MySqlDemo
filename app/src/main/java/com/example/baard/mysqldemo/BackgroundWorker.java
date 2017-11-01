@@ -298,7 +298,7 @@ public class BackgroundWorker extends AsyncTask <String, Void, String> {
             }
         }
 //##### Backgroundworker returnerer ingenting
-        return null;
+        return type;
     }
 
 
