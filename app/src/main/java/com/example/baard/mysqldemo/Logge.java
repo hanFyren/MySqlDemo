@@ -51,7 +51,7 @@ import com.empatica.empalink.delegate.EmpaStatusDelegate;
 //#####         kartlegge ressursbruk, burde dette vært en under-funskjon?          #####
 //#####         Beholde BT kobling ved avslutt                                      #####
 
-public class Logge extends AppCompatActivity {
+public abstract class Logge extends AppCompatActivity implements EmpaDataDelegate, EmpaStatusDelegate {
 //##### Deklarerer globale variabler
 
     public TextView tv_EDR, tv_HR, tv_BVP, tv_aks_x, tv_aks_y, tv_aks_z;
@@ -59,6 +59,9 @@ public class Logge extends AppCompatActivity {
     public SeekBar stress;
     public String ID,bruker_ID;
     public Boolean forste;
+
+    //Bluetooth
+    private EmpaDeviceManager deviceManager;
 
     private Timer timer;
     private TimerTask timerTask;
@@ -125,6 +128,8 @@ public class Logge extends AppCompatActivity {
             }
         });
 
+        deviceManager = new EmpaDeviceManager(getApplicationContext(), this, this);
+        deviceManager.authenticateWithAPIKey("234acf07689e4d2aacfe46bf5b6a816c");
 
     }
 
