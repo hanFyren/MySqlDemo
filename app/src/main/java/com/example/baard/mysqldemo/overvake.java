@@ -30,6 +30,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -41,8 +43,8 @@ public class overvake extends AppCompatActivity  implements AdapterView.OnItemSe
     public Button stopp, tilbake;
     public SeekBar stress;
     public String ID, bruker_ID;
-    public String brukere[];
-    public String navnListe[];
+    public List<String> brukere;
+    public List<String> navnListe;
     public String data[];
     public String finn_url;
     public boolean finne;
@@ -71,9 +73,9 @@ public class overvake extends AppCompatActivity  implements AdapterView.OnItemSe
         Log.i("********", " OVERVAK initiert ************");
         ID = "";
         fortsett = false;
-        brukere= new String[]{};
-        navnListe = new String[]{};
-        data = new String[]{};
+        brukere= new ArrayList<>();
+        navnListe = new ArrayList<>();
+        data = new String[]{""};
         context = this;
         nummer=0;
         bruker_ID = getIntent().getStringExtra("Bruker_ID");
@@ -138,7 +140,11 @@ public class overvake extends AppCompatActivity  implements AdapterView.OnItemSe
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
         stopp.setEnabled(true);
-        ID= brukere[position];
+        ID= brukere.get(position);
+        Log.i("*******","Bruker valgt. Bruker ID:"+ID+" Navn: "+navnListe.get(position));
+        tv_navn.setText(navnListe.get(position));
+        finneTask finne = new finneTask();
+        finne.execute();
     }
 
     @Override
@@ -205,16 +211,18 @@ public class overvake extends AppCompatActivity  implements AdapterView.OnItemSe
                     while ((line = bufferedReader.readLine()) != null) {
 
                         if (navn) {
-                            Log.i("*******", "HENTER AKTIVE, LINE: " + line);
-                            navnListe[navnTeller] = line;
+                            navnListe.add(line);
+                            Log.i("*******", "HENTER AKTIVE, NAVN: " + navnListe.get(navnTeller));
                             navnTeller++;
                             navn = false;
-                            Log.i("*******", "HENTER AKTIVE, NAVN: " + navnListe[navnTeller]);
+
+
                         } else {
-                            brukere[idTeller] = line;
+                            brukere.add(line);
+                            Log.i("*******", "HENTER AKTIVE, ID: " + brukere.get(idTeller));
                             idTeller++;
                             navn = true;
-                            Log.i("*******", "HENTER AKTIVE, ID: " + line + "  " + brukere[idTeller]);
+
                         }
                     }
                     bufferedReader.close();
@@ -230,7 +238,9 @@ public class overvake extends AppCompatActivity  implements AdapterView.OnItemSe
                 }
             }
             else {
+
                 while (fortsett) {
+
                     try {
 
 //#####     definerer URL forbindelse som skal både sende og motta informasjon
@@ -257,25 +267,37 @@ public class overvake extends AppCompatActivity  implements AdapterView.OnItemSe
                         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
 
                         String line;
-                        int idTeller = 0;
-                        int navnTeller = 0;
-                        boolean navn = false;
+                        String type="EDR";
 
                         Log.i("******", "OVERVAAKE, INPUTSTREAM FOR WHILE");
 
                         while ((line = bufferedReader.readLine()) != null) {
 
-                            if (navn) {
-                                Log.i("*******", "HENTER AKTIVE, LINE: " + line);
-                                navnListe[navnTeller] = line;
-                                navnTeller++;
-                                navn = false;
-                                Log.i("*******", "HENTER AKTIVE, NAVN: " + navnListe[navnTeller]);
-                            } else {
-                                brukere[idTeller] = line;
-                                idTeller++;
-                                navn = true;
-                                Log.i("*******", "HENTER AKTIVE, ID: " + line + "  " + brukere[idTeller]);
+                            if(type.equals("EDR")){
+                                Log.i("******","IF EDR: "+line);
+                                tv_EDR.setText(line);
+                                type="HR";
+                            }
+                            else if(type.equals("HR")){
+                                tv_HR.setText(line);
+                                type="BVP";
+                            }
+                            else if(type.equals("BVP")){
+                                tv_BVP.setText(line);
+                                type="aks_x";
+                            }
+                            else if (type.equals("aks_x")){
+                                tv_aks_x.setText(line);
+                                type="aks_y";
+                            }
+                            else if(type.equals("aks_Y")){
+                                tv_aks_y.setText(line);
+                                type="aks_z";
+                            }
+                            else if (type.equals("aks_z")){
+                                Log.i("********","IF aks_z"+line);
+                                tv_aks_z.setText(line);
+                                type="EDR";
                             }
                         }
                         bufferedReader.close();
@@ -309,23 +331,24 @@ public class overvake extends AppCompatActivity  implements AdapterView.OnItemSe
 
         }
 
-        private String oppdatere(String verdier){
+        /*private String oppdatere(String verdier){
             String enString="";
             return enString;
 
-        }
+        }*/
     }
 
     @Override
     protected void onPause(){
         super.onPause();
-        //finneTask.cancel(true);
+        fortsett=false;
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        //finneTask.execute();
+        finneTask finne = new finneTask();
+        finne.execute();
     }
 
 

@@ -80,6 +80,7 @@ public class KobleTil extends AppCompatActivity implements AdapterView.OnItemSel
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
 //##### switch for valg i spinner
+        Log.i("*******","Test av onItemSelected");
         switch (position) {
             case 0:
                 mac_con = "false";
