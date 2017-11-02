@@ -16,9 +16,6 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import org.json.JSONObject;
-
-import java.io.*;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -36,6 +33,17 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 
+/** Created by Baard 30.10.2017
+ *
+ * Her må det jobbes med å implementere timertask
+ * denne kjører fra start, ønsker den initiert selv.
+ * timertask er en work-around i forhold til sleep(), som setter hele aktiviteten i dvale, ikke bare doInBackground()
+ * og for å kunne oppdatere textviews utenfor doInBackground()
+ *
+ * mot SQL fungerer overvake godt.
+ *
+ */
+
 public class overvake extends AppCompatActivity  {
 
     public TextView tv_EDR, tv_HR, tv_BVP, tv_aks_x, tv_aks_y, tv_aks_z, tv_navn;
@@ -47,28 +55,23 @@ public class overvake extends AppCompatActivity  {
     public List<String> navnListe;
     public String data[];
     public String finn_url;
-    public boolean finne;
-
-    int nummer;
-
-    public Context context;
+    public boolean finne, opprettSpinner, fortsett;
 
     private Timer timer;
     private TimerTask timerTask;
     final Handler handler = new Handler();
 
+    int nummer;
 
-    public boolean fortsett;
+    public Context context;
 
     //lykke til!
     //takk
 
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_overvake);
 
         Log.i("********", " OVERVAK initiert ************");
         ID = "";
@@ -80,11 +83,8 @@ public class overvake extends AppCompatActivity  {
         nummer=0;
         bruker_ID = getIntent().getStringExtra("Bruker_ID");
         finn_url = "http://stressapp.no/aktiv.php";
-        finne=true;
+        finne = opprettSpinner=true;
         EDR = HR = BVP = aks_x = aks_y = aks_z ="";
-        //context=this;
-
-        setContentView(R.layout.activity_overvake);
 
         tv_EDR = (TextView) findViewById(R.id.textViewEDR);
         tv_HR = (TextView) findViewById(R.id.textViewHR);
@@ -101,20 +101,21 @@ public class overvake extends AppCompatActivity  {
         stress.setClickable(false);
         stress.setMax(600);
 
+
         Log.i("*******","Starter finne task");
-        finneTask finner = new finneTask();
-        finner.execute();
+        finneTask finner = new finneTask(context);
+        //finner.execute();
 
         stopp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!fortsett) {
 
-                    finneTask finner = new finneTask();
-                    finner.execute();
+                if (!fortsett) {
+                    stopTimerTask();
                     fortsett = true;
                 }
                 else {
+                    startTimer();
                     fortsett = false;
                 }
             }
@@ -128,13 +129,50 @@ public class overvake extends AppCompatActivity  {
                 context.startActivity(intent);
             }
         });
+    }
 
+    //##### initierer Timer for TimerTask
+    public void startTimer(){
+        timer = new Timer();
+        startTimerTask();
+        timer.schedule(timerTask, 1000, 1000);
+    }
+    //##### Når timertask stoppes, stopper også timer
+    public void stopTimerTask(){
+        if (timer != null){
+            timer.cancel();
+            timer = null;
+        }
+    }
+    //##### TimerTask kjører finneTask() hvert sekund
+    public void startTimerTask(){
+        timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        // SETT INN HER
+                        Log.i("*******","TIMERTASK KALLER finnetask()");
+                        finneTask finner = new finneTask(context);
+                        tv_EDR.setText(EDR);
+                        tv_HR.setText(HR);
+                        tv_BVP.setText(BVP);
+                        tv_aks_x.setText(aks_x);
+                        tv_aks_y.setText(aks_y);
+                        tv_aks_z.setText(aks_z);
+                    }
+                });
+            }
+        };
     }
 
     private class finneTask extends AsyncTask<Void, Void, Void>{
 
-        public finneTask(){
+        public finneTask(Context ctx){
             super();
+            context = ctx;
+
             Log.i("*******","I finnetask");
 
             // parametere her
@@ -144,6 +182,7 @@ public class overvake extends AppCompatActivity  {
             Log.i("*******","STARTER FINNE");
             String finn_url_aktive = "http://stressapp.no/aktiv.php";
             String finn_url_data = "http://stressapp.no/overvak.php";
+
 
             if (finne) {
                 finne=false;
@@ -197,9 +236,8 @@ public class overvake extends AppCompatActivity  {
                 }
             }
             else{
-
-                while (fortsett) {
-
+                boolean kjorda =true;
+                while (kjorda) {
                     try {
 
 //#####     definerer URL forbindelse som skal både sende og motta informasjon
@@ -234,32 +272,33 @@ public class overvake extends AppCompatActivity  {
 
                             if(type.equals("EDR")){
                                 Log.i("******","IF EDR: "+line);
-                                tv_EDR.setText(line);
+                                EDR=line;
                                 type="HR";
                                 Log.i("******","IF EDR ferdig : "+line);
                             }
                             else if(type.equals("HR")){
                                 Log.i("******","IF HR: "+line);
-                                tv_HR.setText(line);
+                                HR=line;
                                 type="BVP";
                                 Log.i("******","IF HR ferdig: "+line);
                             }
                             else if(type.equals("BVP")){
-                                tv_BVP.setText(line);
+                                BVP=line;
                                 type="aks_x";
                             }
                             else if (type.equals("aks_x")){
-                                tv_aks_x.setText(line);
+                                aks_x=line;
                                 type="aks_y";
                             }
                             else if(type.equals("aks_Y")){
-                                tv_aks_y.setText(line);
+                                aks_y=line;
                                 type="aks_z";
                             }
                             else if (type.equals("aks_z")){
                                 Log.i("********","IF aks_z"+line);
-                                tv_aks_z.setText(line);
-                                type="EDR";
+                                aks_z=line;
+                                kjorda=false;
+
                             }
                         }
                         bufferedReader.close();
@@ -291,11 +330,14 @@ public class overvake extends AppCompatActivity  {
         protected void onPostExecute(Void Result){
             //Dette skjer når finneTask() er ferdig
 
-            if(finne){
+            if(opprettSpinner){
 
+                opprettSpinner=false;
                   //##### Setter opp Spinner (Rullegardinmeny). innholder elementer fra navnListe, deklarert som global variabel
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,
+
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(context,
                         android.R.layout.simple_spinner_item, navnListe);
+
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 brukerValg.setAdapter(adapter);
 
@@ -313,25 +355,23 @@ public class overvake extends AppCompatActivity  {
 
                     }
                 });
-
+            }
+            else{
 
             }
-
         }
     }
 
     @Override
     protected void onPause(){
         super.onPause();
-        fortsett=false;
+        stopTimerTask();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        finneTask finner = new finneTask();
-        finner.execute();
+        startTimer();
     }
-
 
 }
