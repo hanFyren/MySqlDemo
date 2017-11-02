@@ -56,6 +56,7 @@ public class KobleTil extends AppCompatActivity implements AdapterView.OnItemSel
         spinner.setOnItemSelectedListener(this);
 //***** logge kan ikke trykkes før element fra spinner er valgt og koble til denne har lyktes
         logge.setEnabled(false);
+        overvaak.setEnabled(false);
 
 //***** Kun godkjente bruker_ID skal kunne overvåke andre brukere, overvaak er derfor deaktivert som standard i XML
         if (bruker_ID.equals("139")) {
@@ -96,6 +97,8 @@ public class KobleTil extends AppCompatActivity implements AdapterView.OnItemSel
                 break;
         }
     }
+
+
 
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {

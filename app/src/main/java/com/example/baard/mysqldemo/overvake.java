@@ -36,13 +36,13 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 
-public class overvake extends AppCompatActivity  implements AdapterView.OnItemSelectedListener{
+public class overvake extends AppCompatActivity  {
 
     public TextView tv_EDR, tv_HR, tv_BVP, tv_aks_x, tv_aks_y, tv_aks_z, tv_navn;
     public Spinner brukerValg;
     public Button stopp, tilbake;
     public SeekBar stress;
-    public String ID, bruker_ID;
+    public String ID, bruker_ID, EDR, HR, BVP, aks_x, aks_y, aks_z;
     public List<String> brukere;
     public List<String> navnListe;
     public String data[];
@@ -81,8 +81,8 @@ public class overvake extends AppCompatActivity  implements AdapterView.OnItemSe
         bruker_ID = getIntent().getStringExtra("Bruker_ID");
         finn_url = "http://stressapp.no/aktiv.php";
         finne=true;
+        EDR = HR = BVP = aks_x = aks_y = aks_z ="";
         //context=this;
-
 
         setContentView(R.layout.activity_overvake);
 
@@ -102,22 +102,16 @@ public class overvake extends AppCompatActivity  implements AdapterView.OnItemSe
         stress.setMax(600);
 
         Log.i("*******","Starter finne task");
-        finneTask finne = new finneTask();
-        finne.execute();
-
-
-        //##### Setter opp Spinner (Rullegardinmeny). innholder elementer fra navnListe, deklarert som global variabel
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, navnListe);
-
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
-        brukerValg.setAdapter(adapter);
-        brukerValg.setOnItemSelectedListener(this);
-        //##### til hit er ikke verifisert
+        finneTask finner = new finneTask();
+        finner.execute();
 
         stopp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!fortsett) {
+
+                    finneTask finner = new finneTask();
+                    finner.execute();
                     fortsett = true;
                 }
                 else {
@@ -137,23 +131,6 @@ public class overvake extends AppCompatActivity  implements AdapterView.OnItemSe
 
     }
 
-    @Override
-    public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-        stopp.setEnabled(true);
-        ID= brukere.get(position);
-        Log.i("*******","Bruker valgt. Bruker ID:"+ID+" Navn: "+navnListe.get(position));
-        tv_navn.setText(navnListe.get(position));
-        finneTask finne = new finneTask();
-        finne.execute();
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> adapterView) {
-
-    }
-
-
-
     private class finneTask extends AsyncTask<Void, Void, Void>{
 
         public finneTask(){
@@ -167,9 +144,9 @@ public class overvake extends AppCompatActivity  implements AdapterView.OnItemSe
             Log.i("*******","STARTER FINNE");
             String finn_url_aktive = "http://stressapp.no/aktiv.php";
             String finn_url_data = "http://stressapp.no/overvak.php";
-            String test="test";
 
             if (finne) {
+                finne=false;
                 try {
 
 //#####     definerer URL forbindelse som skal både sende og motta informasjon
@@ -179,23 +156,6 @@ public class overvake extends AppCompatActivity  implements AdapterView.OnItemSe
                     httpURLConnection.setDoOutput(false);
                     httpURLConnection.setDoInput(true);
                     Log.i("*******", "OPPRETTET URL: " + httpURLConnection);
-
-                   /*
-
-                    //#####     poster data til URL forbindelsen
-                    OutputStream outputstream = httpURLConnection.getOutputStream();
-                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputstream, "UTF-8"));
-
-                    String postData = URLEncoder.encode("void", "UTF-8") + "=" + URLEncoder.encode(test, "UTF-8") + "&";
-
-                    bufferedWriter.write(postData);
-                    bufferedWriter.flush();
-                    bufferedWriter.close();
-                    outputstream.close();
-
-                    */
-
-
 
 //#####     Mottar data fra URL forbindelsen
                     InputStream inputStream = httpURLConnection.getInputStream();
@@ -215,7 +175,6 @@ public class overvake extends AppCompatActivity  implements AdapterView.OnItemSe
                             Log.i("*******", "HENTER AKTIVE, NAVN: " + navnListe.get(navnTeller));
                             navnTeller++;
                             navn = false;
-
 
                         } else {
                             brukere.add(line);
@@ -237,7 +196,7 @@ public class overvake extends AppCompatActivity  implements AdapterView.OnItemSe
                     e.printStackTrace();
                 }
             }
-            else {
+            else{
 
                 while (fortsett) {
 
@@ -277,10 +236,13 @@ public class overvake extends AppCompatActivity  implements AdapterView.OnItemSe
                                 Log.i("******","IF EDR: "+line);
                                 tv_EDR.setText(line);
                                 type="HR";
+                                Log.i("******","IF EDR ferdig : "+line);
                             }
                             else if(type.equals("HR")){
+                                Log.i("******","IF HR: "+line);
                                 tv_HR.setText(line);
                                 type="BVP";
+                                Log.i("******","IF HR ferdig: "+line);
                             }
                             else if(type.equals("BVP")){
                                 tv_BVP.setText(line);
@@ -312,9 +274,11 @@ public class overvake extends AppCompatActivity  implements AdapterView.OnItemSe
                         e.printStackTrace();
                     }
                     try {
+                        Log.i("********","SOVER I ETT SEKUND");
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         fortsett=false;
+                        Log.i("********","KUNNE IKKE OVE I ETT SEKUND");
                         e.printStackTrace();
                     }
                 }
@@ -325,17 +289,35 @@ public class overvake extends AppCompatActivity  implements AdapterView.OnItemSe
 
         @Override
         protected void onPostExecute(Void Result){
-            //Dette skjer når den er ferdig
-            // oppdatere(verdier);
-            finne=false;
+            //Dette skjer når finneTask() er ferdig
+
+            if(finne){
+
+                  //##### Setter opp Spinner (Rullegardinmeny). innholder elementer fra navnListe, deklarert som global variabel
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,
+                        android.R.layout.simple_spinner_item, navnListe);
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                brukerValg.setAdapter(adapter);
+
+                brukerValg.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                        stopp.setEnabled(true);
+                        ID= brukere.get(position);
+                        Log.i("*******","Bruker valgt. Bruker ID:"+ID+" Navn: "+navnListe.get(position));
+                        tv_navn.setText(navnListe.get(position));
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> adapterView) {
+
+                    }
+                });
+
+
+            }
 
         }
-
-        /*private String oppdatere(String verdier){
-            String enString="";
-            return enString;
-
-        }*/
     }
 
     @Override
@@ -347,10 +329,9 @@ public class overvake extends AppCompatActivity  implements AdapterView.OnItemSe
     @Override
     protected void onResume() {
         super.onResume();
-        finneTask finne = new finneTask();
-        finne.execute();
+        finneTask finner = new finneTask();
+        finner.execute();
     }
-
 
 
 }

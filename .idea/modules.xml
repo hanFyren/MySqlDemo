@@ -3,11 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/MySqlDemo2.iml" filepath="$PROJECT_DIR$/MySqlDemo2.iml" />
-      <module fileurl="file://C:\Users\baard\AndroidStudioProjects\MySqlDemo2\MySqlDemo2.iml" filepath="C:\Users\baard\AndroidStudioProjects\MySqlDemo2\MySqlDemo2.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://C:\Users\baard\AndroidStudioProjects\MySqlDemo2\app\app.iml" filepath="C:\Users\baard\AndroidStudioProjects\MySqlDemo2\app\app.iml" />
       <module fileurl="file://$PROJECT_DIR$/empalink-2.1/empalink-2.1.iml" filepath="$PROJECT_DIR$/empalink-2.1/empalink-2.1.iml" />
-      <module fileurl="file://C:\Users\baard\AndroidStudioProjects\MySqlDemo2\empalink-2.1\empalink-2.1.iml" filepath="C:\Users\baard\AndroidStudioProjects\MySqlDemo2\empalink-2.1\empalink-2.1.iml" />
     </modules>
   </component>
 </project>
