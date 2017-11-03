@@ -56,6 +56,7 @@ public class overvake extends AppCompatActivity  {
     public String data[];
     public String finn_url;
     public boolean finne, opprettSpinner, fortsett;
+    public int posisjon;
 
     private Timer timer;
     private TimerTask timerTask;
@@ -82,9 +83,11 @@ public class overvake extends AppCompatActivity  {
         context = this;
         nummer=0;
         bruker_ID = getIntent().getStringExtra("Bruker_ID");
+        Log.i("*******","Starter koble til, bruker id: "+bruker_ID);
         finn_url = "http://stressapp.no/aktiv.php";
         finne = opprettSpinner=true;
-        EDR = HR = BVP = aks_x = aks_y = aks_z ="";
+        EDR = HR = BVP = aks_x = aks_y = aks_z ="-";
+        posisjon=0;
 
         tv_EDR = (TextView) findViewById(R.id.textViewEDR);
         tv_HR = (TextView) findViewById(R.id.textViewHR);
@@ -101,22 +104,21 @@ public class overvake extends AppCompatActivity  {
         stress.setClickable(false);
         stress.setMax(600);
 
-
         Log.i("*******","Starter finne task");
-        finneTask finner = new finneTask(context);
-        //finner.execute();
 
         stopp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                if (!fortsett) {
+                if (fortsett) {
                     stopTimerTask();
-                    fortsett = true;
+                    fortsett = false;
                 }
                 else {
+                    Log.i("*******","sjekker posisjon: "+posisjon+" bruker ID: "+brukere.get(posisjon));
+                    ID= brukere.get(posisjon);
                     startTimer();
-                    fortsett = false;
+                    fortsett = true;
                 }
             }
         });
@@ -124,7 +126,7 @@ public class overvake extends AppCompatActivity  {
         tilbake.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context , KobleTil.class);
+                Intent intent = new Intent(getApplicationContext(), KobleTil.class);
                 intent.putExtra("Bruker_ID",bruker_ID);
                 context.startActivity(intent);
             }
@@ -135,7 +137,7 @@ public class overvake extends AppCompatActivity  {
     public void startTimer(){
         timer = new Timer();
         startTimerTask();
-        timer.schedule(timerTask, 1000, 1000);
+        timer.schedule(timerTask, 1000, 2000);
     }
     //##### Når timertask stoppes, stopper også timer
     public void stopTimerTask(){
@@ -154,17 +156,42 @@ public class overvake extends AppCompatActivity  {
                     public void run() {
                         // SETT INN HER
                         Log.i("*******","TIMERTASK KALLER finnetask()");
-                        finneTask finner = new finneTask(context);
-                        tv_EDR.setText(EDR);
-                        tv_HR.setText(HR);
-                        tv_BVP.setText(BVP);
-                        tv_aks_x.setText(aks_x);
-                        tv_aks_y.setText(aks_y);
-                        tv_aks_z.setText(aks_z);
+                        String hjelp;
+                        hjelp="EDR: "+EDR;
+                        tv_EDR.setText(hjelp);
+                        hjelp = "HR: "+HR;
+                        tv_HR.setText(hjelp);
+                        hjelp="BVP: "+BVP;
+                        tv_BVP.setText(hjelp);
+                        hjelp="Aks X: "+aks_x;
+                        tv_aks_x.setText(hjelp);
+                        hjelp="Aks Y: "+aks_y;
+                        tv_aks_y.setText(hjelp);
+                        hjelp="Aks Z: "+aks_z;
+                        tv_aks_z.setText(hjelp);
+
+                        double stressDbl;
+                        try {
+                            stressDbl = Double.parseDouble(EDR) * 100;}
+                            catch(NumberFormatException ex){stressDbl=300;}
+
+                        int stressInt;
+                        stressInt = (int) stressDbl;
+                        Log.i("******", "string til dbl, stressDbl: " + stressDbl + " StressInt: " + stressInt);
+                        stress.setProgress(stressInt);
+
+
+                        hente();
+
                     }
                 });
             }
         };
+    }
+
+    public void hente(){
+        finneTask henter = new finneTask(this);
+        henter.execute();
     }
 
     private class finneTask extends AsyncTask<Void, Void, Void>{
@@ -172,17 +199,12 @@ public class overvake extends AppCompatActivity  {
         public finneTask(Context ctx){
             super();
             context = ctx;
-
-            Log.i("*******","I finnetask");
-
-            // parametere her
         }
 
         protected Void doInBackground(Void... params){
             Log.i("*******","STARTER FINNE");
             String finn_url_aktive = "http://stressapp.no/aktiv.php";
             String finn_url_data = "http://stressapp.no/overvak.php";
-
 
             if (finne) {
                 finne=false;
@@ -236,8 +258,6 @@ public class overvake extends AppCompatActivity  {
                 }
             }
             else{
-                boolean kjorda =true;
-                while (kjorda) {
                     try {
 
 //#####     definerer URL forbindelse som skal både sende og motta informasjon
@@ -252,7 +272,7 @@ public class overvake extends AppCompatActivity  {
                         OutputStream outputstream = httpURLConnection.getOutputStream();
                         BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputstream, "UTF-8"));
 
-                        String postData = URLEncoder.encode("sensor_ID", "UTF-8") + "=" + URLEncoder.encode(ID, "UTF-8") + "&";
+                        String postData = URLEncoder.encode("Bruker_ID", "UTF-8") + "=" + URLEncoder.encode(ID, "UTF-8") + "&";
 
                         bufferedWriter.write(postData);
                         bufferedWriter.flush();
@@ -269,6 +289,7 @@ public class overvake extends AppCompatActivity  {
                         Log.i("******", "OVERVAAKE, INPUTSTREAM FOR WHILE");
 
                         while ((line = bufferedReader.readLine()) != null) {
+                            Log.i("******", "STARTEN AV WHILE line: "+line);
 
                             if(type.equals("EDR")){
                                 Log.i("******","IF EDR: "+line);
@@ -276,29 +297,31 @@ public class overvake extends AppCompatActivity  {
                                 type="HR";
                                 Log.i("******","IF EDR ferdig : "+line);
                             }
-                            else if(type.equals("HR")){
+                            if(type.equals("HR")){
                                 Log.i("******","IF HR: "+line);
                                 HR=line;
                                 type="BVP";
                                 Log.i("******","IF HR ferdig: "+line);
                             }
-                            else if(type.equals("BVP")){
+                            if(type.equals("BVP")){
                                 BVP=line;
                                 type="aks_x";
+                                Log.i("******","IF BVP ferdig: "+line);
                             }
-                            else if (type.equals("aks_x")){
+                            if (type.equals("aks_x")){
                                 aks_x=line;
                                 type="aks_y";
+                                Log.i("******","IF aks_x ferdig: "+aks_x);
                             }
-                            else if(type.equals("aks_Y")){
+                            if(type.equals("aks_y")){
                                 aks_y=line;
                                 type="aks_z";
+                                Log.i("******","IF aks_y ferdig: "+aks_y);
                             }
-                            else if (type.equals("aks_z")){
+                            if (type.equals("aks_z")){
                                 Log.i("********","IF aks_z"+line);
                                 aks_z=line;
-                                kjorda=false;
-
+                                Log.i("*******","IF aks_z, aks-z: "+aks_z);
                             }
                         }
                         bufferedReader.close();
@@ -312,16 +335,7 @@ public class overvake extends AppCompatActivity  {
                         Log.i("*******", "Catch IO-exeption");
                         e.printStackTrace();
                     }
-                    try {
-                        Log.i("********","SOVER I ETT SEKUND");
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        fortsett=false;
-                        Log.i("********","KUNNE IKKE OVE I ETT SEKUND");
-                        e.printStackTrace();
-                    }
                 }
-            }
 
             return null;
         }
@@ -331,7 +345,7 @@ public class overvake extends AppCompatActivity  {
             //Dette skjer når finneTask() er ferdig
 
             if(opprettSpinner){
-
+                stopTimerTask();
                 opprettSpinner=false;
                   //##### Setter opp Spinner (Rullegardinmeny). innholder elementer fra navnListe, deklarert som global variabel
 
@@ -345,19 +359,16 @@ public class overvake extends AppCompatActivity  {
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
                         stopp.setEnabled(true);
-                        ID= brukere.get(position);
+                        posisjon=position;
+                        ID= brukere.get(posisjon);
                         Log.i("*******","Bruker valgt. Bruker ID:"+ID+" Navn: "+navnListe.get(position));
                         tv_navn.setText(navnListe.get(position));
+                        finne=false;
                     }
 
                     @Override
-                    public void onNothingSelected(AdapterView<?> adapterView) {
-
-                    }
+                    public void onNothingSelected(AdapterView<?> adapterView) {}
                 });
-            }
-            else{
-
             }
         }
     }

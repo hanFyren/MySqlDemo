@@ -19,6 +19,7 @@ import java.util.Random;
 //*****         plukke opp og videresende bruker ID for sessions    *****
 //#####         Kommenter                                           #####
 //#####         Rydde opp - ikke hensiktsmessig før ferdigstilling  #####
+//#####         Fikse krasj på button_tilbake - problemet ligger i kobletil.java?   #####
 
 public class KobleTil extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
@@ -42,6 +43,7 @@ public class KobleTil extends AppCompatActivity implements AdapterView.OnItemSel
 
 //##### Henter Bruker_ID fra Backgroundworker
         bruker_ID = getIntent().getStringExtra("Bruker_ID");
+        Log.i("******","Starter koble til, bruker ID: "+bruker_ID);
 
 //##### knytter XML elementer til Java variabler
         spinner = (Spinner) findViewById(R.id.spinner);
@@ -59,7 +61,7 @@ public class KobleTil extends AppCompatActivity implements AdapterView.OnItemSel
         overvaak.setEnabled(false);
 
 //***** Kun godkjente bruker_ID skal kunne overvåke andre brukere, overvaak er derfor deaktivert som standard i XML
-        if (bruker_ID.equals("139")) {
+        if (bruker_ID.equals("139") && bruker_ID!=null) {
             overvaak.setEnabled(true);
         }
 
@@ -72,7 +74,7 @@ public class KobleTil extends AppCompatActivity implements AdapterView.OnItemSel
                 Log.i("*****", "OVERVÅK TRYKKET");
 
                 Intent intent = new Intent(context, overvake.class);
-                intent.putExtra("bruker_ID", bruker_ID);
+                intent.putExtra("Bruker_ID", bruker_ID);
                 startActivity(intent);
             }
         });
