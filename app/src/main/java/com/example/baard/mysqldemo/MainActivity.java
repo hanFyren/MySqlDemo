@@ -11,6 +11,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 
+//Arnar: Sjekker at git sharing fungerer igjen
+
 //##### TO DO:  #####
 //                      ##### = gjenstår    ***** = fullført
 //
