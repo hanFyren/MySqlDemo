@@ -38,7 +38,7 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
     public TextView tv_EDR, tv_HR, tv_BVP, tv_aks_x, tv_aks_y, tv_aks_z;
     public Button pause, avslutt;
     public SeekBar stress;
-    public String ID,bruker_ID;
+    public String ID, bruker_ID;
     public Boolean forste;
 
     private static final int REQUEST_ENABLE_BT = 1;
@@ -48,7 +48,7 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
 
     private static final String EMPATICA_API_KEY = "234acf07689e4d2aacfe46bf5b6a816c"; // Dette er vår API-nøkkel
 
-    private EmpaDeviceManager deviceManager=null;
+    private EmpaDeviceManager deviceManager = null;
 
     private TextView accel_xLabel;
     private TextView accel_yLabel;
@@ -75,13 +75,7 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
     public String sendDN;
 
 
-
     //--------- Oppretter Backgroundworker
-
-
-
-
-
 
 
     @Override
@@ -103,7 +97,7 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
         batteryLabel = (TextView) findViewById(R.id.battery);
         deviceNameLabel = (TextView) findViewById(R.id.deviceName);
 
-        sendGsr=sendX=sendY=sendZ=sendBvp=sendibi="0";
+        sendGsr = sendX = sendY = sendZ = sendBvp = sendibi = "0";
 
         initEmpaticaDeviceManager();
         Log.i("******", "Kjører til forste");
@@ -133,7 +127,7 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
                     initEmpaticaDeviceManager();
                 } else {
                     // Permission denied, boo!
-                    Log.i("bluetooth","runs until showrequestpermission");
+                    Log.i("bluetooth", "runs until showrequestpermission");
                     final boolean needRationale = ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION);
                     new AlertDialog.Builder(this)
                             .setTitle("Permission required")
@@ -168,7 +162,7 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
     private void initEmpaticaDeviceManager() {
         // Android 6 (API level 23) now require ACCESS_COARSE_LOCATION permission to use BLE
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.ACCESS_COARSE_LOCATION }, REQUEST_PERMISSION_ACCESS_COARSE_LOCATION);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_PERMISSION_ACCESS_COARSE_LOCATION);
             Toast.makeText(this, "init kjørt", Toast.LENGTH_SHORT).show();
         } else {
             // Create a new EmpaDeviceManager. MainActivity is both its data and status delegate.
@@ -223,7 +217,7 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
                 // Connect to the device
                 deviceManager.connectDevice(bluetoothDevice);
                 updateLabel(deviceNameLabel, "To: " + deviceName);
-                sendDN=deviceName;
+                sendDN = deviceName;
             } catch (ConnectionNotAllowedException e) {
                 // This should happen only if you try to connect when allowed == false.
                 Toast.makeText(bluetooth.this, "Sorry, you can't connect to this device", Toast.LENGTH_SHORT).show();
@@ -293,9 +287,9 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
         updateLabel(accel_xLabel, "" + x);
         updateLabel(accel_yLabel, "" + y);
         updateLabel(accel_zLabel, "" + z);
-        sendX=String.valueOf(x);
-        sendY=String.valueOf(y);
-        sendZ=String.valueOf(z);
+        sendX = String.valueOf(x);
+        sendY = String.valueOf(y);
+        sendZ = String.valueOf(z);
 
 
     }
@@ -319,15 +313,14 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
         /*Toast.makeText(bluetooth.this, "EDA er" + gsr,Toast.LENGTH_SHORT ).show();*/
 
 
-        }
-
+    }
 
 
     @Override
     public void didReceiveIBI(float ibi, double timestamp) {
 
         updateLabel(ibiLabel, "" + ibi);
-        sendibi=String.valueOf(ibi);
+        sendibi = String.valueOf(ibi);
     }
 
     @Override
@@ -346,32 +339,6 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
         });
     }
 
-
-
-
-
-
-    //----------------Loggefunksjoner (backgroundworker) sender data til SQL
-/*
-    String type = "forste";
-
-    if (forste){
-        BackgroundWorker backgroundworker1 = new BackgroundWorker(this);
-        backgroundworker1.execute(type,ID, bruker_ID);
-        forste = false;
-    }
-
-
-
-
-//*Endring nødvendig: BW kan ikke ta imot HR, dette fordi klokken faktisk ikke måler dette direkte
-//Dette kan jobbes rundt ved å sende en "N/A" til HR
-
-    type="logge";
-    BackgroundWorker backgroundworker = new BackgroundWorker(this);
-        backgroundworker.execute(type, , HR, BVP, aks_x, aks_y, aks_z, ID, bruker_ID);
-*/
 }
-
 
 
