@@ -33,6 +33,29 @@ import com.empatica.empalink.config.EmpaStatus;
 import com.empatica.empalink.delegate.EmpaDataDelegate;
 import com.empatica.empalink.delegate.EmpaStatusDelegate;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
+
+//TODO: kalle Bluetooth.java fra fra koble til, fremfor innlogging, trenger bruker_ID for å logge
+//TODO: Sende bruker_ID fra Kobletil.java til bluetooth.java slik:
+/*
+        Intent intent = new Intent(context , bluetooth.class);
+        intent.putExtra("Bruker_ID",bruker_ID);
+        context.startActivity(intent);
+        */
+//TODO: plukke opp bruker_ID i bluetooth.java slik:
+/*
+bruker_ID = getIntent().getStringExtra("Bruker_ID");
+ */
+
+//TODO: Implementer seekBar, se Logge.java -> public seekBar stress;
+//TODO: implemnter funksjonen forste() i onCreate tilsvarende logge. Denne skal kun kjøres en gang og trenger ingen data fra E4, så passer fint der. om en unik ID fra klokken ikke er klar, kan vi øke delay på start timerTask eller kjøre forste() senere
+//TODO: Implementere tilbake knapp (og pause?)
+//TODO: finne en unik id fra klokken til variabelen ID
+//TODO: Verifisere at rette variabler sendes til BackgroundWorker
+
+
 public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, EmpaStatusDelegate {
 
     public TextView tv_EDR, tv_HR, tv_BVP, tv_aks_x, tv_aks_y, tv_aks_z;
@@ -78,8 +101,17 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
     //--------- Oppretter Backgroundworker
 
 
-    @Override
 
+
+//#####     Deklarer disse for å opprette en timertask.
+    private Timer timer;
+    private TimerTask timerTask;
+    final Handler handler = new Handler();
+
+
+
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.bluetooth);
@@ -99,23 +131,99 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
 
         sendGsr = sendX = sendY = sendZ = sendBvp = sendibi = "0";
 
-        initEmpaticaDeviceManager();
-        Log.i("******", "Kjører til forste");
+
+
+//#####     rot enn så lenge
+
+
+
+       // SeekBar stress; //denne må implementeres, se hvordan i logge.java
+        ID="";  //denne må bli lik en unik ID fra klokken i tide til if(forste) kjøres
+        bruker_ID=""; //må hentes fra forgje aktivitet -> kobletil.java
+        forste = true;
+
+
+
+        //initEmpaticaDeviceManager();
+
         String type = "forste";
-/*
-        if(forste) {
+
+        if(forste) {  //trenger ikke if-settning om dette kan gjøres i on create. må det forsinkes med timerTask, trenger vi fremdeles if'en
+            Log.i("******", "Kjører til forste");
             BackgroundWorker LastOpp = new BackgroundWorker(this);
             LastOpp.execute(type, ID, bruker_ID);
             forste=false;
         }
-       /* Log.i("******", "første BW gjennomført");
+        Log.i("******", "første BW gjennomført");
 
-        type="logge";
-        BackgroundWorker backgroundworker = new BackgroundWorker(this);
 
-        backgroundworker.execute(type, sendGsr, sendHR, sendBvp, sendX, sendY, sendZ, ID, bruker_ID);*/
+        //#####     rot slutt
+
 
     }
+
+
+
+//#####     TIMER TASK IMPLEMENTERING   ######
+
+
+    //#####     initierer Timer for TimerTask
+    public void startTimer(){
+        timer = new Timer();
+        startTimerTask();
+        timer.schedule(timerTask, 1000, 1000); //venter 1000ms før den starter, kjører deretter hvert 1000ms
+    }
+    //#####     Når timertask stoppes, stopper også timer
+    public void stopTimerTask(){
+        if (timer != null){
+            timer.cancel();
+            timer = null;
+        }
+    }
+    //#####     TimerTask kjører finneTask() hvert sekund
+    public void startTimerTask(){
+        timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+
+
+                        //HER IMPLEMTERES DET TIMERTASKEN SKAL GJØRE HVERT SEK. Bla. Å SETTE VERDI TIL SLIDER OG KALLE FUNKSJONEN SOM KALLER BACKGROUNDWORKER
+
+
+//#####     Setter verdi stress-slider
+                        double stressDbl;
+                        try {
+                            stressDbl = Double.parseDouble(sendGsr) * 100;} //denne gangingen fordi slideren tar verdier fra 0 til 600 for å beholde desimaler, jeg antok 6 høyeste gsr som er realistisk å måle
+                        catch(NumberFormatException ex){stressDbl=300;}
+                        int stressInt;
+                        stressInt = (int) stressDbl;
+                        stress.setProgress(stressInt);
+
+//#####     Kaller hente() for nye verdier
+                        laste();
+
+                    }
+                });
+            }
+        };
+    }
+
+    public void laste(){
+        String type="logge";
+        BackgroundWorker backgroundworker = new BackgroundWorker(this);
+        backgroundworker.execute(type, sendGsr, sendibi, sendBvp, sendX, sendY, sendZ, ID, bruker_ID); //ID er klokkens unike ID, bruker_ID er ID til den som har på seg klokken
+    }
+
+
+
+//#####     TIMERTASK IMPLEMENTERING SLUTT      #####
+
+
+
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

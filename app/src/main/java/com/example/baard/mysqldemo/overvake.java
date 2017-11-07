@@ -47,7 +47,6 @@ import java.util.TimerTask;
 public class overvake extends AppCompatActivity  {
 
 //#####     Deklarerer globale variabler
-
     public TextView tv_EDR, tv_HR, tv_BVP, tv_aks_x, tv_aks_y, tv_aks_z, tv_navn;
     public Spinner brukerValg;
     public Button stopp, tilbake;
