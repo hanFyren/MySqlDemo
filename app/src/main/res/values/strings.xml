@@ -13,4 +13,15 @@
     <string name="stressniv">Stressnivå</string>
     <string name="avslutt_overv_kning">Avslutt Overvåkning</string>
     <string name="stressnivaa">Stressnivå</string>
+
+    <string name="accel">Accelerometers</string>
+    <string name="accel_x">x:</string>
+    <string name="accel_y">y:</string>
+    <string name="accel_z">z:</string>
+    <string name="bvp_label">BVP</string>
+    <string name="eda_label">EDA</string>
+    <string name="ibi_label">IBI</string>
+    <string name="emptyText">-</string>
+    <string name="temp_label">Temperature</string>
+    <string name="battery_label">Battery</string>
 </resources>
