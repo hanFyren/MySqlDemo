@@ -35,16 +35,18 @@ import java.util.TimerTask;
 
 /** Created by Baard 30.10.2017
  *
- * Her må det jobbes med å implementere timertask
- * denne kjører fra start, ønsker den initiert selv.
- * timertask er en work-around i forhold til sleep(), som setter hele aktiviteten i dvale, ikke bare doInBackground()
- * og for å kunne oppdatere textviews utenfor doInBackground()
+ * Overvake gir den brukeren veileder mulighet til å overåke andre aktive brukere.
  *
- * mot SQL fungerer overvake godt.
+ * Overvake benytter timerTask for å periodisk hente data fra database.
+ *
+ * Data hentes fra databse ved hjelp av doInBackground som kjøres parallelt med selve Overvake,
+ * uten at dette er synlig for brukeren
  *
  */
 
 public class overvake extends AppCompatActivity  {
+
+//#####     Deklarerer globale variabler
 
     public TextView tv_EDR, tv_HR, tv_BVP, tv_aks_x, tv_aks_y, tv_aks_z, tv_navn;
     public Spinner brukerValg;
@@ -66,15 +68,12 @@ public class overvake extends AppCompatActivity  {
 
     public Context context;
 
-    //lykke til!
-    //takk
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_overvake);
 
-        Log.i("********", " OVERVAK initiert ************");
+//#####     Initialiserer variabler
         ID = "";
         fortsett = false;
         brukere= new ArrayList<>();
@@ -83,7 +82,6 @@ public class overvake extends AppCompatActivity  {
         context = this;
         nummer=0;
         bruker_ID = getIntent().getStringExtra("Bruker_ID");
-        Log.i("*******","Starter koble til, bruker id: "+bruker_ID);
         finn_url = "http://stressapp.no/aktiv.php";
         finne = opprettSpinner=true;
         EDR = HR = BVP = aks_x = aks_y = aks_z ="-";
@@ -104,8 +102,7 @@ public class overvake extends AppCompatActivity  {
         stress.setClickable(false);
         stress.setMax(600);
 
-        Log.i("*******","Starter finne task");
-
+//*****     lytter på stopp (vises til bruker som start overvåkning/fortsett overvåkning/Pause overvåkning) og pauser eller fortsetter overvåkning
         stopp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -113,16 +110,19 @@ public class overvake extends AppCompatActivity  {
                 if (fortsett) {
                     stopTimerTask();
                     fortsett = false;
+                    stopp.setText("Fortsett Overvåkning");
                 }
                 else {
                     Log.i("*******","sjekker posisjon: "+posisjon+" bruker ID: "+brukere.get(posisjon));
                     ID= brukere.get(posisjon);
                     startTimer();
                     fortsett = true;
+                    stopp.setText("Pause overvåkning");
                 }
             }
         });
 
+//*****     Lytter på knapp som tar deg tilbake til tilkoblingsmeny
         tilbake.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -133,20 +133,20 @@ public class overvake extends AppCompatActivity  {
         });
     }
 
-    //##### initierer Timer for TimerTask
+//#####     initierer Timer for TimerTask
     public void startTimer(){
         timer = new Timer();
         startTimerTask();
         timer.schedule(timerTask, 1000, 2000);
     }
-    //##### Når timertask stoppes, stopper også timer
+//#####     Når timertask stoppes, stopper også timer
     public void stopTimerTask(){
         if (timer != null){
             timer.cancel();
             timer = null;
         }
     }
-    //##### TimerTask kjører finneTask() hvert sekund
+//#####     TimerTask kjører finneTask() hvert sekund
     public void startTimerTask(){
         timerTask = new TimerTask() {
             @Override
@@ -154,8 +154,9 @@ public class overvake extends AppCompatActivity  {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        // SETT INN HER
-                        Log.i("*******","TIMERTASK KALLER finnetask()");
+//*****     Ved start timerTask, oppdateres verdiene i tekstboksene. Timertassken kjøres hvert sekund, men siden dette skjer i starten,
+//          Vil overvåkningen ligge noe bak sanntid.
+
                         String hjelp;
                         hjelp="EDR: "+EDR;
                         tv_EDR.setText(hjelp);
@@ -170,17 +171,16 @@ public class overvake extends AppCompatActivity  {
                         hjelp="Aks Z: "+aks_z;
                         tv_aks_z.setText(hjelp);
 
+//#####     Setter verdi stress-slider
                         double stressDbl;
                         try {
                             stressDbl = Double.parseDouble(EDR) * 100;}
                             catch(NumberFormatException ex){stressDbl=300;}
-
                         int stressInt;
                         stressInt = (int) stressDbl;
-                        Log.i("******", "string til dbl, stressDbl: " + stressDbl + " StressInt: " + stressInt);
                         stress.setProgress(stressInt);
 
-
+//#####     Kaller hente() for nye verdier
                         hente();
 
                     }
@@ -190,6 +190,7 @@ public class overvake extends AppCompatActivity  {
     }
 
     public void hente(){
+//#####     hente() oppretter nytt finne objekt som sørger for kommunikasjon til MySQL (gjennom php)
         finneTask henter = new finneTask(this);
         henter.execute();
     }
@@ -201,22 +202,25 @@ public class overvake extends AppCompatActivity  {
             context = ctx;
         }
 
+//#####     Metoden doInBackground() sørger for all kommunikasjon til MySQL og kjøres i bakgrunnen, tilsvarende Backgroundworker.java
         protected Void doInBackground(Void... params){
-            Log.i("*******","STARTER FINNE");
+
+//#####     URL'ene for MySQL kommunikasjon
             String finn_url_aktive = "http://stressapp.no/aktiv.php";
             String finn_url_data = "http://stressapp.no/overvak.php";
 
+//*****     Denne kjøres for å finne aktive brukere, resulteter i to lister, en med brukernavn som fyller spinner
+//          og en med bruker ID som som brukes i spørring for å hente ned data
             if (finne) {
                 finne=false;
                 try {
 
-//#####     definerer URL forbindelse som skal både sende og motta informasjon
+//#####     definerer URL forbindelse som skal motta informasjon
                     URL url = new URL(finn_url_aktive);
                     HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
                     httpURLConnection.setRequestMethod("POST");
                     httpURLConnection.setDoOutput(false);
                     httpURLConnection.setDoInput(true);
-                    Log.i("*******", "OPPRETTET URL: " + httpURLConnection);
 
 //#####     Mottar data fra URL forbindelsen
                     InputStream inputStream = httpURLConnection.getInputStream();
@@ -231,6 +235,7 @@ public class overvake extends AppCompatActivity  {
 
                     while ((line = bufferedReader.readLine()) != null) {
 
+//#####     Fyller navnListe og brukere med data fra database
                         if (navn) {
                             navnListe.add(line);
                             Log.i("*******", "HENTER AKTIVE, NAVN: " + navnListe.get(navnTeller));
@@ -242,7 +247,6 @@ public class overvake extends AppCompatActivity  {
                             Log.i("*******", "HENTER AKTIVE, ID: " + brukere.get(idTeller));
                             idTeller++;
                             navn = true;
-
                         }
                     }
                     bufferedReader.close();
@@ -257,6 +261,8 @@ public class overvake extends AppCompatActivity  {
                     e.printStackTrace();
                 }
             }
+
+//*****     Denne henter ned data fra brukeren som er valgt å overvåke
             else{
                     try {
 
@@ -268,7 +274,7 @@ public class overvake extends AppCompatActivity  {
                         httpURLConnection.setDoInput(true);
                         Log.i("*******", "OPPRETTET URL: " + httpURLConnection);
 
-                        //#####     poster data til URL forbindelsen
+//#####     poster data til URL forbindelsen
                         OutputStream outputstream = httpURLConnection.getOutputStream();
                         BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputstream, "UTF-8"));
 
@@ -286,8 +292,7 @@ public class overvake extends AppCompatActivity  {
                         String line;
                         String type="EDR";
 
-                        Log.i("******", "OVERVAAKE, INPUTSTREAM FOR WHILE");
-
+//*****     Henter her ned data fra databasen. If-settninger for å knytte data til rett vraiabel
                         while ((line = bufferedReader.readLine()) != null) {
                             Log.i("******", "STARTEN AV WHILE line: "+line);
 
@@ -342,13 +347,15 @@ public class overvake extends AppCompatActivity  {
 
         @Override
         protected void onPostExecute(Void Result){
-            //Dette skjer når finneTask() er ferdig
 
+//*****     Dette skjer når finneTask() er ferdig
+
+//#####     Om spinner ikke er opprettet, gjøres dette her
             if(opprettSpinner){
                 stopTimerTask();
                 opprettSpinner=false;
-                  //##### Setter opp Spinner (Rullegardinmeny). innholder elementer fra navnListe, deklarert som global variabel
 
+//#####     Setter opp Spinner (Rullegardinmeny). innholder elementer fra navnListe, deklarert som global variabel
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(context,
                         android.R.layout.simple_spinner_item, navnListe);
 
@@ -356,16 +363,16 @@ public class overvake extends AppCompatActivity  {
                 brukerValg.setAdapter(adapter);
 
                 brukerValg.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+//#####     Når bruker velges, knyttes id fra listen brukere til variabelen ID
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
                         stopp.setEnabled(true);
                         posisjon=position;
                         ID= brukere.get(posisjon);
-                        Log.i("*******","Bruker valgt. Bruker ID:"+ID+" Navn: "+navnListe.get(position));
                         tv_navn.setText(navnListe.get(position));
                         finne=false;
                     }
-
                     @Override
                     public void onNothingSelected(AdapterView<?> adapterView) {}
                 });
@@ -373,16 +380,25 @@ public class overvake extends AppCompatActivity  {
         }
     }
 
+//#####     Ved pause, kjører ikke lenger timerTask()
     @Override
     protected void onPause(){
         super.onPause();
         stopTimerTask();
     }
 
+//#####     Når overvake igjen kjøres etter pause, stater timerTask igjen
     @Override
     protected void onResume() {
         super.onResume();
         startTimer();
     }
 
+//#####     Om overvake skulle krasje, starter man igjen ved innloggingsmenyen
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        stopTimerTask();
+        context.startActivity(new Intent(getApplicationContext(),MainActivity.class));
+    }
 }

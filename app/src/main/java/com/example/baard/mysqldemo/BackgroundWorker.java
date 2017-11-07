@@ -29,6 +29,7 @@ import static android.support.v4.content.ContextCompat.startActivity;
  *
  * Backgroundworker tar x parametere, hvor det første definerer funksjonen,
  * altså hvilket script som skal nyttes og hvilke andre parametere som kan nåes
+ *
  */
 
 //##### TO DO:  #####
@@ -95,7 +96,7 @@ public class BackgroundWorker extends AsyncTask <String, Void, String> {
                 inputStream.close();
                 httpURLConnection.disconnect();
 //#####     returnerer mottatt data fra URL
-                return result; //bruker_ID //Kunne ikke logge inn
+                return result; //bruker_ID eller 'Kunne ikke logge inn'
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -140,7 +141,7 @@ public class BackgroundWorker extends AsyncTask <String, Void, String> {
                 inputStream.close();
                 httpURLConnection.disconnect();
 //#####     returnerer mottatt data fra URL
-                return result; // Brukernavnet er allerede i bruk // Ny bruker opprettett!
+                return result; // 'Brukernavnet er allerede i bruk' eller 'Ny bruker opprettett!'
 
             } catch (MalformedURLException e) {
                 e.printStackTrace();
@@ -186,7 +187,7 @@ public class BackgroundWorker extends AsyncTask <String, Void, String> {
                 inputStream.close();
                 httpURLConnection.disconnect();
 //#####     returnerer mottatt data fra URL
-                return result; //forste sesjon ok
+                return result; //'forste sesjon ok'
 
             } catch (MalformedURLException e) {
                 e.printStackTrace();
