@@ -168,8 +168,44 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="46dp"
-        android:layout_marginStart="19dp"
+        android:layout_marginBottom="14dp"
+        android:layout_toStartOf="@+id/toggleButton2" />
+
+    <TextView
+        android:id="@+id/Loggestatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/loggeToggleButton"
+        android:layout_alignStart="@+id/loggeToggleButton"
+        android:layout_marginBottom="15dp"
+        android:layout_marginStart="22dp"
+        android:text="Logger" />
+
+    <ToggleButton
+        android:id="@+id/loggeToggleButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/progressBar2"
+        android:layout_marginStart="26dp"
+        android:layout_toEndOf="@+id/textView3"
+        android:text="ToggleButton"
+        android:textAppearance="@style/TextAppearance.AppCompat" />
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/Loggestatus"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="22dp"
         android:layout_toEndOf="@+id/deviceName" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/seekBar"
+        android:layout_centerHorizontal="true"
+        android:text="Stressnivå" />
 
 </RelativeLayout>

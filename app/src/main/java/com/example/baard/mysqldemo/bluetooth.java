@@ -20,10 +20,15 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
+import android.support.v7.widget.SwitchCompat;
 
 import com.empatica.empalink.ConnectionNotAllowedException;
 import com.empatica.empalink.EmpaDeviceManager;
@@ -36,7 +41,7 @@ import com.empatica.empalink.delegate.EmpaStatusDelegate;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import pl.pawelkleczkowski.customgauge.CustomGauge;
+
 
 
 //TODO: kalle Bluetooth.java fra fra koble til, fremfor innlogging, trenger bruker_ID for å logge DONE
@@ -52,7 +57,10 @@ bruker_ID = getIntent().getStringExtra("Bruker_ID");
  */
 
 //TODO: Implementer seekBar, se Logge.java -> public seekBar stress;
-//TODO: implemnter funksjonen forste() i onCreate tilsvarende logge. Denne skal kun kjøres en gang og trenger ingen data fra E4, så passer fint der. om en unik ID fra klokken ikke er klar, kan vi øke delay på start timerTask eller kjøre forste() senere
+//TODO: implemnter funksjonen forste() i onCreate tilsvarende logge. Denne skal kun kjøres en gang DONE
+// og trenger ingen data fra E4, så passer fint der. om en unik ID fra klokken ikke er klar,
+// kan vi øke delay på start timerTask eller kjøre forste() senere
+//
 //TODO: Implementere tilbake knapp (og pause?)
 //TODO: finne en unik id fra klokken til variabelen ID
 //TODO: Verifisere at rette variabler sendes til BackgroundWorker
@@ -65,12 +73,13 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
     public SeekBar stress;
     public String ID, bruker_ID;
     public Boolean forste;
-    public CustomGauge StressGauge;
+    public ProgressBar loggeProgressBar;
+
 
     private static final int REQUEST_ENABLE_BT = 1;
     private static final int REQUEST_PERMISSION_ACCESS_COARSE_LOCATION = 1;
 
-    private static final long STREAMING_TIME = 100000; // Definerer streametid
+    private static final long STREAMING_TIME = 7200000; // Definerer streametid
 
     private static final String EMPATICA_API_KEY = "234acf07689e4d2aacfe46bf5b6a816c"; // Dette er vår API-nøkkel
 
@@ -137,6 +146,30 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
         batteryLabel = (TextView) findViewById(R.id.battery);
         deviceNameLabel = (TextView) findViewById(R.id.deviceName);
 
+
+        stress = (SeekBar) findViewById(R.id.seekBar);
+        stress.setClickable(false);
+        stress.setMax(600);
+
+
+        loggeProgressBar = (ProgressBar) findViewById(R.id.progressBar2);
+        loggeProgressBar.setVisibility(View.GONE);
+
+
+        ToggleButton LogOFFON = (ToggleButton) findViewById(R.id.loggeToggleButton);
+        LogOFFON.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    onResume();
+                    loggeProgressBar.setVisibility(View.VISIBLE);
+                } else {
+                    stopTimerTask();
+                    loggeProgressBar.setVisibility(View.GONE);
+                }
+
+            }
+        });
+
         sendGsr = sendX = sendY = sendZ = sendBvp = sendibi = "0";
 
 
@@ -179,7 +212,7 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
     public void startTimer(){
         timer = new Timer();
         startTimerTask();
-        timer.schedule(timerTask, 1000, 1000); //venter 1000ms før den starter, kjører deretter hvert 1000ms
+        timer.schedule(timerTask, 4000, 1000); //venter 1000ms før den starter, kjører deretter hvert 1000ms
     }
     //#####     Når timertask stoppes, stopper også timer
     public void stopTimerTask(){
@@ -208,7 +241,7 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
                         catch(NumberFormatException ex){stressDbl=300;}
                         int stressInt;
                         stressInt = (int) stressDbl;
-                        stress.setProgress(stressInt);
+                        //stress.setProgress(stressInt);
 
 //#####     Kaller hente() for nye verdier
                         laste();
@@ -220,7 +253,16 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
     }
 
     public void laste(){
-        String type="logge";
+
+        String type = "forste";
+        if(forste) {  //trenger ikke if-settning om dette kan gjøres i on create. må det forsinkes med timerTask, trenger vi fremdeles if'en
+            Log.i("******", "Kjører til forste");
+            BackgroundWorker LastOpp = new BackgroundWorker(this);
+            LastOpp.execute(type, ID, bruker_ID);
+            forste=false;
+        }
+
+        type="logge";
         BackgroundWorker backgroundworker = new BackgroundWorker(this);
         backgroundworker.execute(type, sendGsr, sendibi, sendBvp, sendX, sendY, sendZ, ID, bruker_ID); //ID er klokkens unike ID, bruker_ID er ID til den som har på seg klokken
     }
@@ -307,10 +349,16 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
     protected void onPause() {
         super.onPause();
         if (deviceManager != null) {
-            deviceManager.stopScanning();
+            stopTimerTask();
 
 
         }
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        startTimer();
     }
 
     @Override
@@ -426,8 +474,16 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
     public void didReceiveGSR(float gsr, double timestamp) {
         updateLabel(edaLabel, "EDA: " + gsr);
         sendGsr = String.valueOf(gsr);
-        int gsrtilgauge = Integer.valueOf(sendGsr);
-        StressGauge.setValue(gsrtilgauge);
+
+        double stressDbl;
+        try {
+            stressDbl = Double.parseDouble(sendGsr) * 100;} //denne gangingen fordi slideren tar verdier fra 0 til 600 for å beholde desimaler, jeg antok 6 høyeste gsr som er realistisk å måle
+        catch(NumberFormatException ex){stressDbl=300;}
+        int stressInt;
+        stressInt = (int) stressDbl;
+        stress.setProgress(stressInt);
+
+
         /*Toast.makeText(bluetooth.this, "EDA er" + gsr,Toast.LENGTH_SHORT ).show();*/
 
 
@@ -457,6 +513,9 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
         });
     }
 
+    public void pauseLogging(View view){
+        onPause();
+    }
 }
 
 
