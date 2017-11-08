@@ -293,39 +293,29 @@ public class overvake extends AppCompatActivity  {
 
 //*****     Henter her ned data fra databasen. If-settninger for å knytte data til rett vraiabel
                         while ((line = bufferedReader.readLine()) != null) {
-                            Log.i("******", "STARTEN AV WHILE line: "+line);
 
-                            if(type.equals("EDR")){
-                                Log.i("******","IF EDR: "+line);
+                            if(type.equals("EDR")){;
                                 EDR=line;
                                 type="HR";
-                                Log.i("******","IF EDR ferdig : "+line);
                             }
-                            if(type.equals("HR")){
-                                Log.i("******","IF HR: "+line);
+                            else if(type.equals("HR")){
                                 HR=line;
                                 type="BVP";
-                                Log.i("******","IF HR ferdig: "+line);
                             }
-                            if(type.equals("BVP")){
+                            else if(type.equals("BVP")){
                                 BVP=line;
                                 type="aks_x";
-                                Log.i("******","IF BVP ferdig: "+line);
                             }
-                            if (type.equals("aks_x")){
+                            else if (type.equals("aks_x")){
                                 aks_x=line;
                                 type="aks_y";
-                                Log.i("******","IF aks_x ferdig: "+aks_x);
                             }
-                            if(type.equals("aks_y")){
+                            else if(type.equals("aks_y")){
                                 aks_y=line;
                                 type="aks_z";
-                                Log.i("******","IF aks_y ferdig: "+aks_y);
                             }
-                            if (type.equals("aks_z")){
-                                Log.i("********","IF aks_z"+line);
+                            else if (type.equals("aks_z")){
                                 aks_z=line;
-                                Log.i("*******","IF aks_z, aks-z: "+aks_z);
                             }
                         }
                         bufferedReader.close();

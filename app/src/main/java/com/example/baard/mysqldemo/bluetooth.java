@@ -171,16 +171,16 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
         loggPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!fortsett) {
+                if (fortsett) {
                     stopTimerTask();
-                    fortsett = true;
-                    loggPause.setText("Pause");
+                    fortsett = false;
+                    loggPause.setText("Logg");
                     loggeProgressBar.setVisibility(View.VISIBLE);
                 }
                 else {
                     startTimer();
-                    fortsett = false;
-                    loggPause.setText("Logg");
+                    fortsett = true;
+                    loggPause.setText("Pause");
                     loggeProgressBar.setVisibility(View.GONE);
                 }
             }
@@ -229,7 +229,7 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
                         //stress.setProgress(stressInt);
 
 //#####     Kaller hente() for nye verdier
-                        if(DB){laste();}
+                        if(DB)laste();
 
                     }
                 });
@@ -240,7 +240,7 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
     public void laste(){
 
         String type = "forste";
-        if(forste) {  //trenger ikke if-settning om dette kan gjøres i on create. må det forsinkes med timerTask, trenger vi fremdeles if'en
+        if(forste) {
             Log.i("******", "Kjører til forste");
             BackgroundWorker LastOpp = new BackgroundWorker(this);
             LastOpp.execute(type, ID, bruker_ID);
