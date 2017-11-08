@@ -56,13 +56,13 @@ import java.util.TimerTask;
 bruker_ID = getIntent().getStringExtra("Bruker_ID");
  */
 
-//TODO: Implementer seekBar, se Logge.java -> public seekBar stress;
+//TODO: Implementer seekBar, se Logge.java -> public seekBar stress; DONE
 //TODO: implemnter funksjonen forste() i onCreate tilsvarende logge. Denne skal kun kjøres en gang DONE
 // og trenger ingen data fra E4, så passer fint der. om en unik ID fra klokken ikke er klar,
 // kan vi øke delay på start timerTask eller kjøre forste() senere
 //
-//TODO: Implementere tilbake knapp (og pause?)
-//TODO: finne en unik id fra klokken til variabelen ID
+//TODO: Implementere tilbake knapp (og pause?) DONE
+//TODO: finne en unik id fra klokken til variabelen ID DONE
 //TODO: Verifisere at rette variabler sendes til BackgroundWorker
 
 
@@ -131,6 +131,7 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
 
         // ------------------------ Henter inn Bruker_ID
         bruker_ID = getIntent().getStringExtra("Bruker_ID");
+        forste = true;
 
 
         // Initialize vars that reference UI components
@@ -156,51 +157,11 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
         loggeProgressBar.setVisibility(View.GONE);
 
 
-        ToggleButton LogOFFON = (ToggleButton) findViewById(R.id.loggeToggleButton);
-        LogOFFON.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    onResume();
-                    loggeProgressBar.setVisibility(View.VISIBLE);
-                } else {
-                    stopTimerTask();
-                    loggeProgressBar.setVisibility(View.GONE);
-                }
 
-            }
-        });
 
         sendGsr = sendX = sendY = sendZ = sendBvp = sendibi = "0";
 
-
-
-//#####     rot enn så lenge
-
-
-
-       // SeekBar stress; //denne må implementeres, se hvordan i logge.java
-        ID="";  //denne må bli lik en unik ID fra klokken i tide til if(forste) kjøres
-        bruker_ID=""; //må hentes fra forgje aktivitet -> kobletil.java
-        forste = true;
-
-
-
         initEmpaticaDeviceManager();
-
-        String type = "forste";
-
-        if(forste) {  //trenger ikke if-settning om dette kan gjøres i on create. må det forsinkes med timerTask, trenger vi fremdeles if'en
-            Log.i("******", "Kjører til forste");
-            BackgroundWorker LastOpp = new BackgroundWorker(this);
-            LastOpp.execute(type, ID, bruker_ID);
-            forste=false;
-        }
-        Log.i("******", "første BW gjennomført");
-
-
-        //#####     rot slutt
-
-
     }
 
 
@@ -364,6 +325,10 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        String type ="siste";
+        BackgroundWorker backgroundworker = new BackgroundWorker(this);
+        backgroundworker.execute(type, ID, bruker_ID);
+
         if (deviceManager != null) {
             deviceManager.cleanUp();
         }
@@ -381,7 +346,7 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
                 // Connect to the device
                 deviceManager.connectDevice(bluetoothDevice);
                 updateLabel(deviceNameLabel, "To: " + deviceName);
-                sendDN = deviceName;
+                ID = deviceName;
             } catch (ConnectionNotAllowedException e) {
                 // This should happen only if you try to connect when allowed == false.
                 Toast.makeText(bluetooth.this, "Sorry, you can't connect to this device", Toast.LENGTH_SHORT).show();
@@ -513,8 +478,25 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
         });
     }
 
+    public void startLogging(View view){
+        startTimer();
+    }
+
     public void pauseLogging(View view){
-        onPause();
+        stopTimerTask();
+    }
+
+    public void avsluttLogging(View view){
+        //gå tilbake en meny, husk å sende bruker_ID
+        stopTimerTask();
+
+        String type ="siste";
+        BackgroundWorker backgroundworker = new BackgroundWorker(this);
+        backgroundworker.execute(type, ID, bruker_ID);
+
+        Intent intent = new Intent(this , KobleTil.class);
+        intent.putExtra("Bruker_ID",bruker_ID);
+        this.startActivity(intent);
     }
 }
 
