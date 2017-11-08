@@ -21,19 +21,15 @@ import java.util.Random;
 //#####         Rydde opp - ikke hensiktsmessig før ferdigstilling  #####
 //#####         Fikse krasj på button_tilbake - problemet ligger i kobletil.java?   #####
 
-public class KobleTil extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class KobleTil extends AppCompatActivity{
 
 //  ##### Deklarerer Globale variabler
 
-    private Spinner spinner;
-    private Button logge, overvaak;
-    private static final String[] paths = {"Ingen enhet", "E4 1", "E4 2", "E4 3"};
-    String mac_1 = "00ABCDEF";
-    String mac_2 = "00AACDEF";
-    String mac_3 = "00ABBDEF";
-    String mac_con;
-    String bruker_ID;
-    Context context =this;
+
+    private Button overvaak;
+
+    public String bruker_ID;
+    public Context context;
 
 
     @Override
@@ -41,26 +37,16 @@ public class KobleTil extends AppCompatActivity implements AdapterView.OnItemSel
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_koble_til);
 
+        context=this;
+
 //##### Henter Bruker_ID fra Backgroundworker
         bruker_ID = getIntent().getStringExtra("Bruker_ID");
-        Log.i("******","Starter koble til, bruker ID: "+bruker_ID);
 
 //##### knytter XML elementer til Java variabler
-        spinner = (Spinner) findViewById(R.id.spinner);
-        logge = (Button) findViewById(R.id.buttonStartLogging);
         overvaak = (Button) findViewById(R.id.buttonOvervak);
-
-//##### Setter opp Spinner (Rullegardinmeny). innholder elementer fra paths, deklarert som global variabel
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(KobleTil.this, android.R.layout.simple_spinner_item, paths);
-
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(this);
-//***** logge kan ikke trykkes før element fra spinner er valgt og koble til denne har lyktes
-        logge.setEnabled(false);
         overvaak.setEnabled(false);
 
-//***** Kun godkjente bruker_ID skal kunne overvåke andre brukere, overvaak er derfor deaktivert som standard i XML
+//***** Kun godkjente bruker_ID skal kunne overvåke andre brukere, overvaak er derfor deaktivert som standard
         if (bruker_ID.equals("139") && bruker_ID!=null) {
             overvaak.setEnabled(true);
         }
@@ -70,9 +56,6 @@ public class KobleTil extends AppCompatActivity implements AdapterView.OnItemSel
             public void onClick(View view) {
 
                 //##### Funksjon om Overvåk trykket
-//##### Foreløbig ikke implementert
-                Log.i("*****", "OVERVÅK TRYKKET");
-
                 Intent intent = new Intent(context, overvake.class);
                 intent.putExtra("Bruker_ID", bruker_ID);
                 startActivity(intent);
@@ -80,63 +63,8 @@ public class KobleTil extends AppCompatActivity implements AdapterView.OnItemSel
         });
     }
 
-    @Override
-    public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-//##### switch for valg i spinner
-        Log.i("*******","Test av onItemSelected");
-        switch (position) {
-            case 0:
-                mac_con = "false";
-                break;
-            case 1:
-                mac_con = mac_1;
-                break;
-            case 2:
-                mac_con = mac_2;
-                break;
-            case 3:
-                mac_con = mac_3;
-                break;
-        }
-    }
-
-
-
-    @Override
-    public void onNothingSelected(AdapterView<?> adapterView) {
-        mac_con = "false";
-    }
-
-    public void OnOppkobling(View view) {
-//##### avgjør om enhet er koblet til. Om dette er tilfellet kan logging starte
-        if (mac_con.equals("false")) {
-            Toast.makeText(this, "Venligst velg en enhet du ønsker å koble til", Toast.LENGTH_SHORT).show();
-
-        } else {
-
-            //##### TO DO   #####
-            //##### Legge til oppkobling mot faktisk enhet
-
-            Toast.makeText(this, "Kobler til enhet: " + mac_con, Toast.LENGTH_SHORT).show();
-            logge.setEnabled(true);
-
-
-        }
-    }
-
-    public void OnLogge(View view) {
-//##### Funksjon om Logge trykkes.
-        // starter aktiviteten Logge, sender argumentene mac_con og bruker_ID
-        Log.i("**********", " TRYKKET KNAPP LOGGE *************");
-        Intent intent = new Intent(this, Logge.class);
-        intent.putExtra("ID", mac_con);
-        intent.putExtra("Bruker_ID", bruker_ID);
-        startActivity(intent); //starter Register aktiviteten
-    }
     public void ConnectE4(View view){
-        Log.i("**********", " TRYKKET KNAPP CONNECT *************");
-       // Intent intent = new Intent(this, bluetooth.class);
-        // startActivity(intent);
+
         // --------------- Sender Bruker_ID til bluetooth.java
         Intent intent = new Intent(context , bluetooth.class);
         intent.putExtra("Bruker_ID",bruker_ID);
