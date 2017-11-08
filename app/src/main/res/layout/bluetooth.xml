@@ -98,14 +98,6 @@
             android:text="@string/emptyText" />
 
         <TextView
-            android:id="@+id/eda_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/bvp"
-            android:layout_marginTop="10dp"
-            android:text="@string/eda_label" />
-
-        <TextView
             android:id="@+id/eda"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -151,6 +143,15 @@
             android:text="@string/battery_label" />
 
         <TextView
+            android:id="@+id/eda_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/bvp"
+            android:text="@string/eda_label"
+            tools:layout_editor_absoluteX="6dp"
+            tools:layout_editor_absoluteY="88dp" />
+
+        <TextView
             android:id="@+id/battery"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -160,60 +161,90 @@
 
     </RelativeLayout>
 
-    <ProgressBar
-        android:id="@+id/progressBar2"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="14dp"
-        android:layout_toStartOf="@+id/toggleButton2" />
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/status">
 
-    <SeekBar
-        android:id="@+id/seekBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/progressBar2"
-        android:layout_alignParentEnd="true"
-        android:layout_marginBottom="64dp"
-        android:layout_toEndOf="@+id/deviceName" />
+        <ProgressBar
+            android:id="@+id/progressBar2"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="4dp"
+            android:layout_marginStart="16dp"
+            gauge:layout_constraintBottom_toBottomOf="parent"
+            gauge:layout_constraintEnd_toEndOf="parent"
+            gauge:layout_constraintHorizontal_bias="0.0"
+            gauge:layout_constraintStart_toStartOf="parent"
+            gauge:layout_constraintTop_toTopOf="parent"
+            gauge:layout_constraintVertical_bias="0.995" />
 
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/seekBar"
-        android:layout_centerHorizontal="true"
-        android:text="Stressnivå" />
+        <Button
+            android:id="@+id/logbtn"
+            android:layout_width="107dp"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/progressBar2"
+            android:layout_marginStart="68dp"
+            android:layout_toStartOf="@+id/textView3"
+            android:onClick="startLogging"
+            android:text="Logg"
+            gauge:layout_constraintBottom_toBottomOf="parent"
+            gauge:layout_constraintStart_toEndOf="@+id/progressBar2"
+            gauge:layout_constraintTop_toBottomOf="@+id/seekBar"
+            gauge:layout_constraintVertical_bias="0.363" />
 
-    <Button
-        android:id="@+id/button3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/pauseBtn"
-        android:layout_alignBottom="@+id/pauseBtn"
-        android:layout_alignParentEnd="true"
-        android:onClick="avsluttLogging"
-        android:text="Avslutt" />
+        <Button
+            android:id="@+id/button3"
+            android:layout_width="103dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/pauseBtn"
+            android:layout_alignBottom="@+id/pauseBtn"
+            android:layout_alignParentEnd="true"
+            android:onClick="avsluttLogging"
+            android:text="Avslutt"
+            gauge:layout_constraintBottom_toBottomOf="parent"
+            gauge:layout_constraintEnd_toEndOf="parent"
+            gauge:layout_constraintTop_toBottomOf="@+id/seekBar" />
 
-    <Button
-        android:id="@+id/logbtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/progressBar2"
-        android:layout_toStartOf="@+id/textView3"
-        android:onClick="startLogging"
-        android:text="Logg" />
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/seekBar"
+            android:layout_centerHorizontal="true"
+            android:text="Stressnivå"
+            gauge:layout_constraintBottom_toBottomOf="parent"
+            gauge:layout_constraintEnd_toEndOf="parent"
+            gauge:layout_constraintHorizontal_bias="0.501"
+            gauge:layout_constraintStart_toStartOf="parent"
+            gauge:layout_constraintTop_toTopOf="parent"
+            gauge:layout_constraintVertical_bias="0.825" />
 
-    <Button
-        android:id="@+id/pauseBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/logbtn"
-        android:layout_alignBottom="@+id/logbtn"
-        android:layout_marginStart="14dp"
-        android:layout_toEndOf="@+id/logbtn"
-        android:onClick="pauseLogging"
-        android:text="Pause" />
+        <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="330dp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/progressBar2"
+            android:layout_alignParentEnd="true"
+            android:layout_toEndOf="@+id/deviceName"
+            gauge:layout_constraintBottom_toBottomOf="parent"
+            gauge:layout_constraintEnd_toEndOf="parent"
+            gauge:layout_constraintHorizontal_bias="0.727"
+            gauge:layout_constraintStart_toStartOf="parent"
+            gauge:layout_constraintTop_toTopOf="parent"
+            gauge:layout_constraintVertical_bias="0.869" />
+
+        <GridLayout
+            android:layout_width="336dp"
+            android:layout_height="229dp"
+            tools:layout_editor_absoluteX="8dp"
+            tools:layout_editor_absoluteY="114dp">
+
+        </GridLayout>
+
+    </android.support.constraint.ConstraintLayout>
 
 </RelativeLayout>

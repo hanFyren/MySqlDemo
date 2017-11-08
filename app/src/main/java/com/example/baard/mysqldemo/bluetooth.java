@@ -119,9 +119,10 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
     private Timer timer;
     private TimerTask timerTask;
     final Handler handler = new Handler();
+    public Boolean DB;
 
-
-
+    public Button loggPause;
+    public boolean fortsett = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,6 +133,8 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
         // ------------------------ Henter inn Bruker_ID
         bruker_ID = getIntent().getStringExtra("Bruker_ID");
         forste = true;
+        DB=false;
+
 
 
         // Initialize vars that reference UI components
@@ -152,6 +155,8 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
         stress.setClickable(false);
         stress.setMax(600);
 
+        loggPause=(Button) findViewById(R.id.logbtn);
+
 
         loggeProgressBar = (ProgressBar) findViewById(R.id.progressBar2);
         loggeProgressBar.setVisibility(View.GONE);
@@ -162,6 +167,24 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
         sendGsr = sendX = sendY = sendZ = sendBvp = sendibi = "0";
 
         initEmpaticaDeviceManager();
+
+        loggPause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!fortsett) {
+                    stopTimerTask();
+                    fortsett = true;
+                    loggPause.setText("Pause");
+                    loggeProgressBar.setVisibility(View.VISIBLE);
+                }
+                else {
+                    startTimer();
+                    fortsett = false;
+                    loggPause.setText("Logg");
+                    loggeProgressBar.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
 
@@ -173,7 +196,7 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
     public void startTimer(){
         timer = new Timer();
         startTimerTask();
-        timer.schedule(timerTask, 4000, 1000); //venter 1000ms før den starter, kjører deretter hvert 1000ms
+        timer.schedule(timerTask, 500, 1000); //venter 1000ms før den starter, kjører deretter hvert 1000ms
     }
     //#####     Når timertask stoppes, stopper også timer
     public void stopTimerTask(){
@@ -184,6 +207,7 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
     }
     //#####     TimerTask kjører finneTask() hvert sekund
     public void startTimerTask(){
+        loggeProgressBar.setVisibility(View.VISIBLE);
         timerTask = new TimerTask() {
             @Override
             public void run() {
@@ -205,7 +229,7 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
                         //stress.setProgress(stressInt);
 
 //#####     Kaller hente() for nye verdier
-                        laste();
+                        if(DB){laste();}
 
                     }
                 });
@@ -347,6 +371,7 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
                 deviceManager.connectDevice(bluetoothDevice);
                 updateLabel(deviceNameLabel, "To: " + deviceName);
                 ID = deviceName;
+                DB=true;
             } catch (ConnectionNotAllowedException e) {
                 // This should happen only if you try to connect when allowed == false.
                 Toast.makeText(bluetooth.this, "Sorry, you can't connect to this device", Toast.LENGTH_SHORT).show();
@@ -498,6 +523,8 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
         intent.putExtra("Bruker_ID",bruker_ID);
         this.startActivity(intent);
     }
+
+
 }
 
 

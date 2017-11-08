@@ -25,8 +25,9 @@
         <activity android:name=".Registrer" />
         <activity android:name=".KobleTil" />
         <activity android:name=".Logge" />
-        <activity android:name=".overvake"></activity>
+        <activity android:name=".overvake"/>
         <activity android:name=".bluetooth"/>
+
     </application>
 
 </manifest>
