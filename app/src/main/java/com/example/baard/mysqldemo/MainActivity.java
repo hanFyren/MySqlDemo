@@ -63,9 +63,5 @@ public class MainActivity extends AppCompatActivity {
        startActivity(new Intent(this, Registrer.class));
     }
 
-    public void ConnectE4(View view){
-        Log.i("**********", " TRYKKET KNAPP CONNECT *************");
-        Intent intent = new Intent(this, bluetooth.class);
-        startActivity(intent);
-    }
+    //ConnectE4 Fjernet herfra og plassert i KobleTil.java
 }

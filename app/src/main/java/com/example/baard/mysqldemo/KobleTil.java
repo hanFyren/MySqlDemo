@@ -119,6 +119,8 @@ public class KobleTil extends AppCompatActivity implements AdapterView.OnItemSel
 
             Toast.makeText(this, "Kobler til enhet: " + mac_con, Toast.LENGTH_SHORT).show();
             logge.setEnabled(true);
+
+
         }
     }
 
@@ -130,6 +132,15 @@ public class KobleTil extends AppCompatActivity implements AdapterView.OnItemSel
         intent.putExtra("ID", mac_con);
         intent.putExtra("Bruker_ID", bruker_ID);
         startActivity(intent); //starter Register aktiviteten
+    }
+    public void ConnectE4(View view){
+        Log.i("**********", " TRYKKET KNAPP CONNECT *************");
+       // Intent intent = new Intent(this, bluetooth.class);
+        // startActivity(intent);
+        // --------------- Sender Bruker_ID til bluetooth.java
+        Intent intent = new Intent(context , bluetooth.class);
+        intent.putExtra("Bruker_ID",bruker_ID);
+        context.startActivity(intent);
     }
 }
 

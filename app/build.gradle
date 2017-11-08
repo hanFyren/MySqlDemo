@@ -39,5 +39,6 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile(name: 'empalink-2.1', ext: 'aar')
     compile 'com.squareup.okhttp:okhttp:2.5.0'
+    compile 'pl.pawelkleczkowski.customgauge:CustomGauge:1.0.3'
 
 }

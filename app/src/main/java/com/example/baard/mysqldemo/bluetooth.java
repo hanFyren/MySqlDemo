@@ -36,15 +36,17 @@ import com.empatica.empalink.delegate.EmpaStatusDelegate;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import pl.pawelkleczkowski.customgauge.CustomGauge;
 
-//TODO: kalle Bluetooth.java fra fra koble til, fremfor innlogging, trenger bruker_ID for å logge
-//TODO: Sende bruker_ID fra Kobletil.java til bluetooth.java slik:
+
+//TODO: kalle Bluetooth.java fra fra koble til, fremfor innlogging, trenger bruker_ID for å logge DONE
+//TODO: Sende bruker_ID fra Kobletil.java til bluetooth.java slik: DONE  --> denne ligger nå i Connect E4 funksjonen
 /*
         Intent intent = new Intent(context , bluetooth.class);
         intent.putExtra("Bruker_ID",bruker_ID);
         context.startActivity(intent);
         */
-//TODO: plukke opp bruker_ID i bluetooth.java slik:
+//TODO: plukke opp bruker_ID i bluetooth.java slik: DONE --> denne ligger nå i onCreate i denne filen.
 /*
 bruker_ID = getIntent().getStringExtra("Bruker_ID");
  */
@@ -63,6 +65,7 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
     public SeekBar stress;
     public String ID, bruker_ID;
     public Boolean forste;
+    public CustomGauge StressGauge;
 
     private static final int REQUEST_ENABLE_BT = 1;
     private static final int REQUEST_PERMISSION_ACCESS_COARSE_LOCATION = 1;
@@ -116,6 +119,11 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
         super.onCreate(savedInstanceState);
         setContentView(R.layout.bluetooth);
 
+
+        // ------------------------ Henter inn Bruker_ID
+        bruker_ID = getIntent().getStringExtra("Bruker_ID");
+
+
         // Initialize vars that reference UI components
         statusLabel = (TextView) findViewById(R.id.status);
         dataCnt = (RelativeLayout) findViewById(R.id.dataArea);
@@ -144,7 +152,7 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
 
 
 
-        //initEmpaticaDeviceManager();
+        initEmpaticaDeviceManager();
 
         String type = "forste";
 
@@ -418,6 +426,8 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
     public void didReceiveGSR(float gsr, double timestamp) {
         updateLabel(edaLabel, "EDA: " + gsr);
         sendGsr = String.valueOf(gsr);
+        int gsrtilgauge = Integer.valueOf(sendGsr);
+        StressGauge.setValue(gsrtilgauge);
         /*Toast.makeText(bluetooth.this, "EDA er" + gsr,Toast.LENGTH_SHORT ).show();*/
 
 
