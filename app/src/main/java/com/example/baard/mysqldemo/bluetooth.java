@@ -279,10 +279,11 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
                 // Hvis request ble kansellert vil arrays være tomme.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
                 {
-                    // Tillatelse gitt
+                    // Tillatelse gitt, da starter initEmpaticaDeviceManager
                     initEmpaticaDeviceManager();
                 } else {
-                    // Tillatelse nektet
+                    // Dersom tillatelsen ikke er der vil brukeren bli spurt om å skru på denne
+
                     Log.i("bluetooth", "runs until showrequestpermission");
                     final boolean needRationale =
                             ActivityCompat.shouldShowRequestPermissionRationale
@@ -324,6 +325,7 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
     }
 
     private void initEmpaticaDeviceManager() {
+
         // Android 6 (API level 23) trenger nå ACCESS_COARSE_LOCATION
         // tillatelse for å benytte BLE (Bluetooth Low Energy)
         if (ContextCompat.checkSelfPermission
@@ -338,15 +340,18 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
             //Skaper en ny EmpaDeviceManager. Bluetooth.java er både dens data og status-delegat.
             deviceManager = new EmpaDeviceManager
                     (getApplicationContext(), this, this);
-            Toast.makeText(this, "else kjørt", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Device Manager initialisert", Toast.LENGTH_SHORT).show();
+
+            // Dersom det ikke er lagt inn noen API-key vil dette komme opp som en feilmelding i
+            // appen før den vil lukkes når brukeren trykker på "Lukk"
 
             if (TextUtils.isEmpty(EMPATICA_API_KEY)) {
                 new AlertDialog.Builder(this)
-                        .setTitle("Warning")
-                        .setMessage("Please insert your API KEY")
-                        .setNegativeButton("Close", new DialogInterface.OnClickListener() {
+                        .setTitle("Advarsel")
+                        .setMessage("Vennligst skriv inn din API KEY")
+                        .setNegativeButton("Lukk", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                // uten tillatelse er exit den eneste mulighet
+                                // uten tillatelsen er exit den eneste mulighet
                                 finish();
                             }
                         })
@@ -361,6 +366,8 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
 
     @Override
     protected void onPause() {
+
+        //Hvis pause er satt vil timeren stoppe.
         super.onPause();
         if (deviceManager != null) {
             stopTimerTask();
@@ -371,6 +378,7 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
 
     @Override
     protected void onResume(){
+        //ved gjenopptagelse av aktiviteten vil timeren starte igjen
         super.onResume();
         startTimer();
     }
@@ -378,12 +386,16 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        // Når aktiviteten termineres vil BackgroundWorker motta "siste" som type og derme
+        // avslutte loggingen i SQL. Sesjonen er da over.
         String type ="siste";
         BackgroundWorker backgroundworker = new BackgroundWorker(this);
         backgroundworker.execute(type, ID, bruker_ID);
 
         if (deviceManager != null) {
             deviceManager.cleanUp();
+            //Device Manager klargjøres for eventuelt ny aktivitet
         }
     }
 
@@ -413,16 +425,17 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
 
     @Override
     public void didRequestEnableBluetooth() {
-        // Request the user to enable Bluetooth
+
+        // Oppfordrer brukeren til å skru på Bluetooth dersom dette ikke er gjort.
         Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
         startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // The user chose not to enable Bluetooth
+        // Dette er en funksjon som brukes i fall brukeren ikke skrur på Bluetooth
         if (requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_CANCELED) {
-            // You should deal with this
+
             return;
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -430,7 +443,7 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
 
     @Override
     public void didUpdateSensorStatus(EmpaSensorStatus status, EmpaSensorType type) {
-        // No need to implement this right now
+        // Denne har vi ikke sett behov for å implementere ennå
     }
 
     @Override
@@ -441,9 +454,9 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
         // Device Manager er klar til bruk
         if (status == EmpaStatus.READY) {
             updateLabel(statusLabel, status.name() + " - Turn on your device");
-            // Start scanning
+            // Starter skanningen etter tilgjengelige enheter innen rekkevidde.
             deviceManager.startScanning();
-            // Device Manager har opprettet en forbindelse
+            // Device Manager har opprettet en forbindelse med en enhet
         } else if (status == EmpaStatus.CONNECTED) {
             // Stopper streamingen av data når STREAMING_TIME er utløpt
 
@@ -454,7 +467,7 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            // Frakoble enhet
+                            // Programmet avsluttes
                             Toast.makeText(bluetooth.this, "Programmet avsluttes",
                                     Toast.LENGTH_SHORT).show();
 
@@ -472,6 +485,10 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
 
     @Override
     public void didReceiveAcceleration(int x, int y, int z, double timestamp) {
+
+        // Her henter vi inn de tre akselerometer-verdiene. disse oppdateres så videre inn i UI.
+        // Samtidig konverterer vi de til stringer som plukkes opp av BackgroundWorker.
+
         updateLabel(accel_xLabel, "" + x);
         updateLabel(accel_yLabel, "" + y);
         updateLabel(accel_zLabel, "" + z);
@@ -483,18 +500,32 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
 
     @Override
     public void didReceiveBVP(float bvp, double timestamp) {
+
+        // Denne funksjonen mottar verdien for blodvolumtrykk og oppdaterer Label i UI.
+        // BVP konverteres til string som kan plukkes opp av BackgroundWorker
+
         updateLabel(bvpLabel, "" + bvp);
         sendBvp = String.valueOf(bvp);
     }
 
     @Override
     public void didReceiveBatteryLevel(float battery, double timestamp) {
+
+        // Henter batterinivå, gjør ikke noe annet med dette annet enn å oppdatere label i UI
         updateLabel(batteryLabel, String.format("%.0f %%", battery * 100));
 
     }
 
     @Override
     public void didReceiveGSR(float gsr, double timestamp) {
+
+        // Dette er selve gullegget:
+        // Elektrodermisk aktivitet registreres og blir passert gjennom datadelegate til
+        // denne funksjonen som først oppdaterer UI med ny label, for så å konvertere gsr
+        // (EDA-verdien) til string for BackgroundWorker. Videre blir det satt en ny double som
+        // brukes til å oppdatere vår ProgressBar som er en visuell fremstilling av et "stressnivå".
+
+
         updateLabel(edaLabel, "EDA: " + gsr);
         sendGsr = String.valueOf(gsr);
         double stressDbl;
@@ -514,7 +545,8 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
 
     @Override
     public void didReceiveIBI(float ibi, double timestamp) {
-
+        // Tar i mot interbeat intervals, oppdaterer label i UI og konverterer til string for
+        // BackgroundWorker.
         updateLabel(ibiLabel, "" + ibi);
         sendibi = String.valueOf(ibi);
     }
@@ -526,6 +558,7 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
 
     // Update a label with some text, making sure this is run in the UI thread
     private void updateLabel(final TextView label, final String text) {
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -536,21 +569,29 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
     }
 
     public void startLogging(View view){
+
+        //ved kalling på startLogging vil Timer starte igjen.
+
         startTimer();
     }
 
     public void pauseLogging(View view){
+
+        //ved kalling på pauseLogging vil Timer stoppe.
         stopTimerTask();
     }
 
     public void avsluttLogging(View view){
-        //gå tilbake en meny, husk å sende bruker_ID
+
+        //Stopper Timer
         stopTimerTask();
 
+        // BackgroundWorker får beskjed om å sende meldingen "siste" som avslutter sesjonen i SQL
         String type ="siste";
         BackgroundWorker backgroundworker = new BackgroundWorker(this);
         backgroundworker.execute(type, ID, bruker_ID);
 
+        //Ved avsluttLogging vil man bli sendt tilbake KobleTil-menyen
         Intent intent = new Intent(this , KobleTil.class);
         intent.putExtra("Bruker_ID",bruker_ID);
         this.startActivity(intent);
