@@ -2,8 +2,12 @@ package com.example.baard.mysqldemo;
 
 import android.Manifest;
 import android.app.Activity;
+
+
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+
+
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -196,7 +200,8 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
     public void startTimer(){
         timer = new Timer();
         startTimerTask();
-        timer.schedule(timerTask, 500, 1000); //venter 1000ms før den starter, kjører deretter hvert 1000ms
+        timer.schedule(timerTask, 500, 1000);
+        //venter 1000ms før den starter, kjører deretter hvert 1000ms
     }
     //#####     Når timertask stoppes, stopper også timer
     public void stopTimerTask(){
@@ -216,13 +221,16 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
                     public void run() {
 
 
-                        //HER IMPLEMTERES DET TIMERTASKEN SKAL GJØRE HVERT SEK. Bla. Å SETTE VERDI TIL SLIDER OG KALLE FUNKSJONEN SOM KALLER BACKGROUNDWORKER
+                        //HER IMPLEMTERES DET TIMERTASKEN SKAL GJØRE HVERT SEK. Bla.
+                        // Å SETTE VERDI TIL SLIDER OG KALLE FUNKSJONEN SOM KALLER BACKGROUNDWORKER
 
 
 //#####     Setter verdi stress-slider
                         double stressDbl;
                         try {
-                            stressDbl = Double.parseDouble(sendGsr) * 100;} //denne gangingen fordi slideren tar verdier fra 0 til 600 for å beholde desimaler, jeg antok 6 høyeste gsr som er realistisk å måle
+                            stressDbl = Double.parseDouble(sendGsr) * 100;}
+                            //denne gangingen fordi slideren tar verdier fra 0 til 600 for å
+                            // beholde desimaler, jeg antok 6 høyeste gsr som er realistisk å måle
                         catch(NumberFormatException ex){stressDbl=300;}
                         int stressInt;
                         stressInt = (int) stressDbl;
@@ -240,7 +248,8 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
     public void laste(){
 
         String type = "forste";
-        if(forste) {  //trenger ikke if-settning om dette kan gjøres i on create. må det forsinkes med timerTask, trenger vi fremdeles if'en
+        if(forste) {    //trenger ikke if-settning om dette kan gjøres i on create.
+                        // må det forsinkes med timerTask, trenger vi fremdeles if'en
             Log.i("******", "Kjører til forste");
             BackgroundWorker LastOpp = new BackgroundWorker(this);
             LastOpp.execute(type, ID, bruker_ID);
@@ -249,7 +258,9 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
 
         type="logge";
         BackgroundWorker backgroundworker = new BackgroundWorker(this);
-        backgroundworker.execute(type, sendGsr, sendibi, sendBvp, sendX, sendY, sendZ, ID, bruker_ID); //ID er klokkens unike ID, bruker_ID er ID til den som har på seg klokken
+        backgroundworker.execute
+                (type, sendGsr, sendibi, sendBvp, sendX, sendY, sendZ, ID, bruker_ID);
+        //ID er klokkens unike ID, bruker_ID er ID til den som har på seg klokken
     }
 
 
@@ -261,30 +272,40 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
 
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         switch (requestCode) {
             case REQUEST_PERMISSION_ACCESS_COARSE_LOCATION:
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Permission was granted, yay!
+                // Hvis request ble kansellert vil arrays være tomme.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                {
+                    // Tillatelse gitt
                     initEmpaticaDeviceManager();
                 } else {
-                    // Permission denied, boo!
+                    // Tillatelse nektet
                     Log.i("bluetooth", "runs until showrequestpermission");
-                    final boolean needRationale = ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION);
+                    final boolean needRationale =
+                            ActivityCompat.shouldShowRequestPermissionRationale
+                                    (this, Manifest.permission.ACCESS_COARSE_LOCATION);
                     new AlertDialog.Builder(this)
                             .setTitle("Permission required")
-                            .setMessage("Without this permission bluetooth low energy devices cannot be found, allow it in order to connect to the device.")
+                            .setMessage("Without this permission bluetooth low energy devices " +
+                                    "cannot be found, allow it in order to connect to the device.")
                             .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
-                                    // try again
+                                    // prøver igjen
                                     if (needRationale) {
-                                        // the "never ask again" flash is not set, try again with permission request
+                                        // "never ask again"-flagget er ikke satt, spør igjen om
+                                        // tillatelse
                                         initEmpaticaDeviceManager();
                                     } else {
-                                        // the "never ask again" flag is set so the permission requests is disabled, try open app settings to enable the permission
-                                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                        Uri uri = Uri.fromParts("package", getPackageName(), null);
+                                        //"never ask again"-flagg er satt, derfor blir
+                                        // tillatelsesforspørsel avkoblet, man må inn i app
+                                        // settings for å endre denne
+                                        Intent intent = new Intent
+                                                (Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                        Uri uri = Uri.fromParts
+                                                ("package", getPackageName(), null);
                                         intent.setData(uri);
                                         startActivity(intent);
                                     }
@@ -292,7 +313,7 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
                             })
                             .setNegativeButton("Exit application", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
-                                    // without permission exit is the only way
+                                    // hvis ingen tillatelse er gitt, er exit den eneste muligheten.
                                     finish();
                                 }
                             })
@@ -303,13 +324,20 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
     }
 
     private void initEmpaticaDeviceManager() {
-        // Android 6 (API level 23) now require ACCESS_COARSE_LOCATION permission to use BLE
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_PERMISSION_ACCESS_COARSE_LOCATION);
+        // Android 6 (API level 23) trenger nå ACCESS_COARSE_LOCATION
+        // tillatelse for å benytte BLE (Bluetooth Low Energy)
+        if (ContextCompat.checkSelfPermission
+                (this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions
+                    (this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                            REQUEST_PERMISSION_ACCESS_COARSE_LOCATION);
+
             Toast.makeText(this, "init kjørt", Toast.LENGTH_SHORT).show();
         } else {
-            // Create a new EmpaDeviceManager. MainActivity is both its data and status delegate.
-            deviceManager = new EmpaDeviceManager(getApplicationContext(), this, this);
+            //Skaper en ny EmpaDeviceManager. Bluetooth.java er både dens data og status-delegat.
+            deviceManager = new EmpaDeviceManager
+                    (getApplicationContext(), this, this);
             Toast.makeText(this, "else kjørt", Toast.LENGTH_SHORT).show();
 
             if (TextUtils.isEmpty(EMPATICA_API_KEY)) {
@@ -318,14 +346,15 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
                         .setMessage("Please insert your API KEY")
                         .setNegativeButton("Close", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                // without permission exit is the only way
+                                // uten tillatelse er exit den eneste mulighet
                                 finish();
                             }
                         })
                         .show();
                 return;
             }
-            // Initialize the Device Manager using your API key. You need to have Internet access at this point.
+            //Device Manageren blir initialisert ved hjelp av API-nøkkelen.
+            // Dette fordrer at man har internett-forbindelse.
             deviceManager.authenticateWithAPIKey(EMPATICA_API_KEY);
         }
     }
@@ -359,22 +388,25 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
     }
 
     @Override
-    public void didDiscoverDevice(BluetoothDevice bluetoothDevice, String deviceName, int rssi, boolean allowed) {
-        // Check if the discovered device can be used with your API key. If allowed is always false,
-        // the device is not linked with your API key. Please check your developer area at
-        // https://www.empatica.com/connect/developer.php
+    public void didDiscoverDevice
+            (BluetoothDevice bluetoothDevice, String deviceName, int rssi, boolean allowed) {
+        // Sjekker om den oppdagede enheten kan bli brukt med vår API-key,
+        // If Allowed er alltid false
+
         if (allowed) {
-            // Stop scanning. The first allowed device will do.
+            // Stopper skanning og bruker den første godkjente enheten den finner.
             deviceManager.stopScanning();
             try {
-                // Connect to the device
+                // Kobler til enheten
                 deviceManager.connectDevice(bluetoothDevice);
                 updateLabel(deviceNameLabel, "To: " + deviceName);
                 ID = deviceName;
                 DB=true;
             } catch (ConnectionNotAllowedException e) {
-                // This should happen only if you try to connect when allowed == false.
-                Toast.makeText(bluetooth.this, "Sorry, you can't connect to this device", Toast.LENGTH_SHORT).show();
+                // Dette vil kun skje dersom en prøver å koble til og allowed == false
+                Toast.makeText
+                        (bluetooth.this, "Sorry, you can't connect to this device",
+                                Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -403,17 +435,17 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
 
     @Override
     public void didUpdateStatus(EmpaStatus status) {
-        // Update the UI
+        // Oppdaterer User Interface
         updateLabel(statusLabel, status.name());
 
-        // The device manager is ready for use
+        // Device Manager er klar til bruk
         if (status == EmpaStatus.READY) {
             updateLabel(statusLabel, status.name() + " - Turn on your device");
             // Start scanning
             deviceManager.startScanning();
-            // The device manager has established a connection
+            // Device Manager har opprettet en forbindelse
         } else if (status == EmpaStatus.CONNECTED) {
-            // Stop streaming after STREAMING_TIME
+            // Stopper streamingen av data når STREAMING_TIME er utløpt
 
             runOnUiThread(new Runnable() {
                 @Override
@@ -422,14 +454,16 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            // Disconnect device
-                            Toast.makeText(bluetooth.this, "Programmet avsluttes", Toast.LENGTH_SHORT).show();
+                            // Frakoble enhet
+                            Toast.makeText(bluetooth.this, "Programmet avsluttes",
+                                    Toast.LENGTH_SHORT).show();
+
                             deviceManager.disconnect();
                         }
                     }, STREAMING_TIME);
                 }
             });
-            // The device manager disconnected from a device
+            // Device Manager har koblet fra enheten
         } else if (status == EmpaStatus.DISCONNECTED) {
             updateLabel(deviceNameLabel, "");
         }
@@ -444,7 +478,6 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
         sendX = String.valueOf(x);
         sendY = String.valueOf(y);
         sendZ = String.valueOf(z);
-
 
     }
 
@@ -464,18 +497,17 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
     public void didReceiveGSR(float gsr, double timestamp) {
         updateLabel(edaLabel, "EDA: " + gsr);
         sendGsr = String.valueOf(gsr);
-
         double stressDbl;
+
         try {
-            stressDbl = Double.parseDouble(sendGsr) * 100;} //denne gangingen fordi slideren tar verdier fra 0 til 600 for å beholde desimaler, jeg antok 6 høyeste gsr som er realistisk å måle
+            stressDbl = Double.parseDouble(sendGsr) * 100;}
+            //denne gangingen fordi slideren tar verdier fra 0 til 600 for å beholde desimaler,
+            // jeg antok 6 høyeste gsr som er realistisk å måle
         catch(NumberFormatException ex){stressDbl=300;}
+
         int stressInt;
         stressInt = (int) stressDbl;
         stress.setProgress(stressInt);
-
-
-        /*Toast.makeText(bluetooth.this, "EDA er" + gsr,Toast.LENGTH_SHORT ).show();*/
-
 
     }
 
