@@ -39,6 +39,9 @@ dependencies {
     compile 'com.android.support:design:26.+'
     testCompile 'junit:junit:4.12'
 
+    // Her inkluderes Empalink, den kjøres sammen med applikasjonen slik at man kan benytte seg
+    // av funksjonene. Dette er også vår API som tillater applikasjonen vår å kommunisere med
+    // Empatica E4-klokken via Bluetooth.
     compile(name: 'empalink-2.1', ext: 'aar')
 
     compile 'com.squareup.okhttp:okhttp:2.5.0'
