@@ -1,4 +1,4 @@
-﻿package com.example.baard.mysqldemo;
+package com.example.baard.mysqldemo;
 
 import android.Manifest;
 import android.app.Activity;
