@@ -14,22 +14,19 @@ import android.widget.EditText;
 
 //Arnar: Sjekker at git sharing fungerer igjen
 
-//##### TO DO:  #####
-//                      ##### = gjenstår    ***** = fullført
+//#####         TO DO:          #####
 //
-//#####         hente ned bruker-ID for å lagre session     #####
-//#####         Implememtere metode for sanntidsovervåkning #####
-//#####         Ikke sende passord i klartekst              #####
-//#####         Kommentere                                  #####
+//#####         Kommentere
 
 
 //#####         Kommentarer markert ##### beskriver programmets funksjonalitet.
 //#####         Kommentarer markert ***** beskriver løsninger som er valgt og hvorfor
 
+
 public class MainActivity extends AppCompatActivity {
 //##### Deklarerer globale variabler
-    // kun to nødvendig, editText, brukes for å hente innlogingsinformasjon fra bruker
-    // implementering av kanpper skjer i XML
+//***** kun to nødvendig, editText, brukes for å hente innlogingsinformasjon fra bruker
+//      implementering av knapper skjer i XML
 
     EditText Brukernavn_et, Passord_et;
 
@@ -41,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
 //##### Knytter XML elementer til Java variabler
         Brukernavn_et = (EditText)findViewById(R.id.editTextBrukernavn);
         Passord_et = (EditText)findViewById(R.id.editTextPassord);
-
     }
 
     public void OnLogin(View view){

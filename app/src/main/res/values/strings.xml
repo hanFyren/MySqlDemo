@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">MySqlDemo</string>
+    <string name="app_name">StressApp</string>
     <string name="action_settings">Settings</string>
-    <string name="log_inn">Log inn</string>
+    <string name="logg_inn">Log inn</string>
     <string name="opprett_ny_bruker">Opprett ny bruker</string>
     <string name="passord">Passord</string>
     <string name="koble_til_din_e4">Koble til din E4</string>
