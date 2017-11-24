@@ -521,6 +521,7 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
         // (EDA-verdien) til string for BackgroundWorker. Videre blir det satt en ny double som
         // brukes til å oppdatere vår ProgressBar som er en visuell fremstilling av et "stressnivå".
 
+
         gsr=round(gsr*1000);
         gsr=gsr/1000;
         updateLabel(edaLabel, "EDA: " + gsr);
