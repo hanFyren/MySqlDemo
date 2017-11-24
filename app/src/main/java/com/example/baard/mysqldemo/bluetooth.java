@@ -11,6 +11,7 @@ import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -45,7 +46,7 @@ import com.empatica.empalink.delegate.EmpaStatusDelegate;
 import java.util.Timer;
 import java.util.TimerTask;
 
-
+import static java.lang.Math.round;
 
 
 //TODO: kalle Bluetooth.java fra fra koble til, fremfor innlogging, trenger bruker_ID for å logge DONE
@@ -154,12 +155,14 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
         batteryLabel = (TextView) findViewById(R.id.battery);
         deviceNameLabel = (TextView) findViewById(R.id.deviceName);
 
+        edaLabel.setTypeface(null, Typeface.BOLD);
 
         stress = (SeekBar) findViewById(R.id.seekBar);
         stress.setClickable(false);
         stress.setMax(600);
 
         loggPause=(Button) findViewById(R.id.logbtn);
+
 
 
         loggeProgressBar = (ProgressBar) findViewById(R.id.progressBar2);
@@ -227,18 +230,7 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
                         // Å SETTE VERDI TIL SLIDER OG KALLE FUNKSJONEN SOM KALLER BACKGROUNDWORKER
 
 
-//#####     Setter verdi stress-slider
-                        double stressDbl;
-                        try {
-                            stressDbl = Double.parseDouble(sendGsr) * 100;}
-                            //denne gangingen fordi slideren tar verdier fra 0 til 600 for å
-                            // beholde desimaler, jeg antok 6 høyeste gsr som er realistisk å måle
-                        catch(NumberFormatException ex){stressDbl=300;}
-                        int stressInt;
-                        stressInt = (int) stressDbl;
-                        //stress.setProgress(stressInt);
-
-//#####     Kaller hente() for nye verdier
+//#####     Kaller laste() for nye verdier
                         if(DB)laste();
 
                     }
@@ -507,6 +499,8 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
         // Denne funksjonen mottar verdien for blodvolumtrykk og oppdaterer Label i UI.
         // BVP konverteres til string som kan plukkes opp av BackgroundWorker
 
+        bvp=round(bvp*1000);
+        bvp = bvp/1000;
         updateLabel(bvpLabel, "" + bvp);
         sendBvp = String.valueOf(bvp);
     }
@@ -528,7 +522,8 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
         // (EDA-verdien) til string for BackgroundWorker. Videre blir det satt en ny double som
         // brukes til å oppdatere vår ProgressBar som er en visuell fremstilling av et "stressnivå".
 
-
+        gsr=round(gsr*1000);
+        gsr=gsr/1000;
         updateLabel(edaLabel, "EDA: " + gsr);
         sendGsr = String.valueOf(gsr);
         double stressDbl;
@@ -550,6 +545,9 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
     public void didReceiveIBI(float ibi, double timestamp) {
         // Tar i mot interbeat intervals, oppdaterer label i UI og konverterer til string for
         // BackgroundWorker.
+
+        ibi=round(ibi*1000);
+        ibi=ibi/1000;
         updateLabel(ibiLabel, "" + ibi);
         sendibi = String.valueOf(ibi);
     }
