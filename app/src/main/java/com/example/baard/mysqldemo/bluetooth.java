@@ -510,7 +510,6 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
 
         // Henter batterinivå, gjør ikke noe annet med dette annet enn å oppdatere label i UI
         updateLabel(batteryLabel, String.format("%.0f %%", battery * 100));
-
     }
 
     @Override
