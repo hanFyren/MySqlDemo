@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.baard.mysqldemo">
 
+    /*
+        Brukstillatelse som gjør at appen kan koble seg på internett og gi tilgang til en grov
+        posisjon som kreves av bluetooth-funksjonene.
+    */
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
@@ -22,6 +26,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        /*
+            Under er aktivitetene som er inkludert i programmet. De fem aktivitetene er de skjermene
+            som brukeren ser når vedkommende bruker applikasjonen
+        */
+
         <activity android:name=".Registrer" />
         <activity android:name=".KobleTil" />
         <activity android:name=".Logge" />

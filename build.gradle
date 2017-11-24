@@ -15,7 +15,11 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+
         flatDir{
+            // Her er stort sett autogenerert kode, bortsett fra her:
+            // vi har inkluder directory-mappen libs for at programmet finne den importerte
+            // Empalink-filen.
             dirs'libs'
         }
 

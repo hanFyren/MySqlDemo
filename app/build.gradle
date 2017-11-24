@@ -30,6 +30,7 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
+
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
@@ -37,7 +38,12 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.android.support:design:26.+'
     testCompile 'junit:junit:4.12'
+
+    // Her inkluderes Empalink, den kjøres sammen med applikasjonen slik at man kan benytte seg
+    // av funksjonene. Dette er også vår API som tillater applikasjonen vår å kommunisere med
+    // Empatica E4-klokken via Bluetooth.
     compile(name: 'empalink-2.1', ext: 'aar')
+
     compile 'com.squareup.okhttp:okhttp:2.5.0'
 
 
