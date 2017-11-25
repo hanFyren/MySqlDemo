@@ -41,11 +41,9 @@ import static android.support.v4.content.ContextCompat.startActivity;
 
 public class BackgroundWorker extends AsyncTask <String, Void, String> {
 //##### Deklarerer globale variabler
-    Context context;
-    AlertDialog alertDialog;
-    BackgroundWorker(Context ctx) {
-        context = ctx;
-    }
+    private Context context;
+    private AlertDialog alertDialog;
+    BackgroundWorker(Context ctx) {context = ctx;    }
 
 
     @Override
@@ -137,7 +135,6 @@ public class BackgroundWorker extends AsyncTask <String, Void, String> {
                 while ((line = bufferedReader.readLine()) != null){
                     result +=line;
                 }
-                bufferedReader.close();
                 inputStream.close();
                 httpURLConnection.disconnect();
 //#####     returnerer mottatt data fra URL
