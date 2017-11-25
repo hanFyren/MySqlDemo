@@ -75,7 +75,7 @@ public class Logge extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_logge);
-        Log.i("********", " LOGGE initiert ************");
+        Log.i("********", " Logge starter");
 
 //##### Henter variabler fra KobleTil og definerer globale variabler
         ID = getIntent().getStringExtra("ID");
@@ -177,8 +177,6 @@ public class Logge extends AppCompatActivity {
               handler.post(new Runnable() {
                   @Override
                   public void run() {
-                      // SETT INN HER
-                      Log.i("*******","TIMERTASK KALLER LOGGE");
                       logge();
                   }
               });

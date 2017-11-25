@@ -48,29 +48,6 @@ import java.util.TimerTask;
 
 import static java.lang.Math.round;
 
-
-//TODO: kalle Bluetooth.java fra fra koble til, fremfor innlogging, trenger bruker_ID for å logge DONE
-//TODO: Sende bruker_ID fra Kobletil.java til bluetooth.java slik: DONE  --> denne ligger nå i Connect E4 funksjonen
-/*
-        Intent intent = new Intent(context , bluetooth.class);
-        intent.putExtra("Bruker_ID",bruker_ID);
-        context.startActivity(intent);
-        */
-//TODO: plukke opp bruker_ID i bluetooth.java slik: DONE --> denne ligger nå i onCreate i denne filen.
-/*
-bruker_ID = getIntent().getStringExtra("Bruker_ID");
- */
-
-//TODO: Implementer seekBar, se Logge.java -> public seekBar stress; DONE
-//TODO: implemnter funksjonen forste() i onCreate tilsvarende logge. Denne skal kun kjøres en gang DONE
-// og trenger ingen data fra E4, så passer fint der. om en unik ID fra klokken ikke er klar,
-// kan vi øke delay på start timerTask eller kjøre forste() senere
-//
-//TODO: Implementere tilbake knapp (og pause?) DONE
-//TODO: finne en unik id fra klokken til variabelen ID DONE
-//TODO: Verifisere at rette variabler sendes til BackgroundWorker
-
-
 public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, EmpaStatusDelegate {
 
     public SeekBar stress;
@@ -100,7 +77,7 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
     private TextView deviceNameLabel;
     private RelativeLayout dataCnt;
 
-    //--------Oppretter variabler for å sende klokkedata til BackgroundWorker
+    //--------Oppretter variabler for å sende klokkedata til AsyncTask
 
     public String sendGsr;
     public String sendX;
@@ -111,11 +88,6 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
     public String sendibi;
     public String sendHR;
     public String sendDN;
-
-
-    //--------- Oppretter Backgroundworker
-
-
 
 
 //#####     Deklarer disse for å opprette en timertask.
@@ -139,7 +111,6 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
         DB=false;
 
 
-
         // Initialize vars that reference UI components
         statusLabel = (TextView) findViewById(R.id.status);
         dataCnt = (RelativeLayout) findViewById(R.id.dataArea);
@@ -161,13 +132,8 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
 
         loggPause=(Button) findViewById(R.id.logbtn);
 
-
-
         loggeProgressBar = (ProgressBar) findViewById(R.id.progressBar2);
         loggeProgressBar.setVisibility(View.GONE);
-
-
-
 
         sendGsr = sendX = sendY = sendZ = sendBvp = sendibi = "0";
 
@@ -213,7 +179,7 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
             timer = null;
         }
     }
-    //#####     TimerTask kjører finneTask() hvert sekund
+//#####     TimerTask kjører laste() hvert sekund
     public void startTimerTask(){
         loggeProgressBar.setVisibility(View.VISIBLE);
         timerTask = new TimerTask() {
@@ -222,12 +188,6 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-
-
-                        //HER IMPLEMTERES DET TIMERTASKEN SKAL GJØRE HVERT SEK. Bla.
-                        // Å SETTE VERDI TIL SLIDER OG KALLE FUNKSJONEN SOM KALLER BACKGROUNDWORKER
-
-
 //#####     Kaller laste() for nye verdier
                         if(DB)laste();
 
@@ -364,8 +324,6 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
         super.onPause();
         if (deviceManager != null) {
             stopTimerTask();
-
-
         }
     }
 

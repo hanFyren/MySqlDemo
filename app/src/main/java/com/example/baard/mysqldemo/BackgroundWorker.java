@@ -32,12 +32,6 @@ import static android.support.v4.content.ContextCompat.startActivity;
  *
  */
 
-//##### TO DO:  #####
-//'''''         Implemntere sessions                    *****
-//#####         Returnere BrukerID fra innlogging       #####
-//#####         Implementere sanntids overvåkning       #####
-//#####         Fikse bugs i registrering/innlogging    #####
-//#####         kvalitetssikre varselboks               #####
 
 public class BackgroundWorker extends AsyncTask <String, Void, String> {
 //##### Deklarerer globale variabler
@@ -48,7 +42,7 @@ public class BackgroundWorker extends AsyncTask <String, Void, String> {
 
     @Override
     protected String doInBackground(String... params) {
-        Log.i("**********"," BACKGROUNDWORKER STARTER *************");
+        Log.i("**********"," BavkgroundWorker starter");
 //##### Oppretter stringer med URL'er som skal nyttes
 //***** params[0] er type som er sendt fra alt som kaller Bakcgroundworker. avgjør funksjonaliteten ved hjelp av if settningene under
         String type = params[0];
@@ -150,7 +144,7 @@ public class BackgroundWorker extends AsyncTask <String, Void, String> {
 
         else if (type.equals("forste"))
         {
-            Log.i("*******","BKGRNDWRKER FORSTE");
+
             try{
 //#####     henter resterende variabler fra params[]
                 String ID = params[1];
@@ -194,7 +188,6 @@ public class BackgroundWorker extends AsyncTask <String, Void, String> {
         }
 
         else if(type.equals("logge")){
-            Log.i("**********"," BACKGROUNDWORKER LOGGE *************");
             try {
 //#####     henter resterende variabler fra params[]
                 String EDR=params[1];
@@ -252,7 +245,6 @@ public class BackgroundWorker extends AsyncTask <String, Void, String> {
 
         else if(type.equals("siste")){
 
-            Log.i("**********"," BACKGROUNDWORKER SISTE *************");
             try {
 //#####     henter resterende variabler fra params[]
                 String bruker_ID=params[2];
@@ -332,7 +324,6 @@ public class BackgroundWorker extends AsyncTask <String, Void, String> {
 //##### Ved opprettelse av bruker vellykket eller feilet
         else if(aVoid.equals("Brukernavnet er allerede i bruk") || aVoid.equals("Ny bruker opprettett!")){
 //##### Viser dialogboks med melding til brukeren
-            Log.i("*******",aVoid);
             alertDialog.setMessage(aVoid);
             alertDialog.show();
 //##### Ved vellykket opprettelse av bruker, går til innlogging

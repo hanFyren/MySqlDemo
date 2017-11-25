@@ -14,16 +14,16 @@ import android.widget.Toast;
 
 import java.util.Random;
 
-//##### TOD DO: #####
-//#####         Implementere oppkobling av BT                       #####
-//*****         plukke opp og videresende bruker ID for sessions    *****
-//#####         Kommenter                                           #####
-//#####         Rydde opp - ikke hensiktsmessig før ferdigstilling  #####
-//#####         Fikse krasj på button_tilbake - problemet ligger i kobletil.java?   #####
+/** Created by Baard 30.10.2017
+ *
+ * KobleTil er kun en meny hvor en kan velge om man skal logge aktivitet,
+ * om man er logget inn som veileder kan man velge å overvåke aktivitet
+ *
+ */
 
 public class KobleTil extends AppCompatActivity{
 
-//  ##### Deklarerer Globale variabler
+//##### Deklarerer Globale variabler
 
 
     private Button overvaak;
@@ -36,6 +36,7 @@ public class KobleTil extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_koble_til);
+        Log.i("*******","KobleTil starter");
 
         context=this;
 
@@ -55,7 +56,7 @@ public class KobleTil extends AppCompatActivity{
             @Override
             public void onClick(View view) {
 
-                //##### Funksjon om Overvåk trykket
+//##### Funksjon om Overvåk trykket
                 Intent intent = new Intent(context, overvake.class);
                 intent.putExtra("Bruker_ID", bruker_ID);
                 startActivity(intent);
@@ -63,6 +64,7 @@ public class KobleTil extends AppCompatActivity{
         });
     }
 
+//##### funksjon om Logge trykket
     public void ConnectE4(View view){
 
         // --------------- Sender Bruker_ID til bluetooth.java

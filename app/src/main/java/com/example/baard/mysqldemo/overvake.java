@@ -2,6 +2,7 @@ package com.example.baard.mysqldemo;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.renderscript.Sampler;
@@ -37,7 +38,7 @@ import java.util.TimerTask;
 
 /** Created by Baard 30.10.2017
  *
- * Overvake gir den brukeren veileder mulighet til å overåke andre aktive brukere.
+ * Overvake gir veileder mulighet til å overåke andre aktive brukere.
  *
  * Overvake benytter timerTask for å periodisk hente data fra database.
  *
@@ -73,6 +74,7 @@ public class overvake extends AppCompatActivity  {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_overvake);
+        Log.i("*******","overvake starter");
 
 //#####     Initialiserer variabler
         ID = "";
@@ -100,6 +102,8 @@ public class overvake extends AppCompatActivity  {
         tilbake = (Button) findViewById(R.id.buttonTilbake);
         stress = (SeekBar) findViewById(R.id.seekBarStress);
 
+        tv_EDR.setTypeface(null, Typeface.BOLD);
+
         stress.setClickable(false);
         stress.setMax(600);
 
@@ -108,17 +112,19 @@ public class overvake extends AppCompatActivity  {
             @Override
             public void onClick(View view) {
 
+                String hjelp=null;
                 if (fortsett) {
                     stopTimerTask();
                     fortsett = false;
-                    stopp.setText("Fortsett Overvåkning");
+                    hjelp="Fortsett Overvåkning";
+                    stopp.setText(hjelp);
                 }
                 else {
-                    Log.i("*******","sjekker posisjon: "+posisjon+" bruker ID: "+brukere.get(posisjon));
                     ID= brukere.get(posisjon);
                     startTimer();
                     fortsett = true;
-                    stopp.setText("Pause overvåkning");
+                    hjelp="Pause overvåkning";
+                    stopp.setText(hjelp);
                 }
             }
         });
@@ -159,7 +165,7 @@ public class overvake extends AppCompatActivity  {
 //          Vil overvåkningen ligge noe bak sanntid.
 
                         String hjelp;
-                        hjelp="EDR: "+EDR;
+                        hjelp="EDA: "+EDR;
                         tv_EDR.setText(hjelp);
                         hjelp = "HR: "+HR;
                         tv_HR.setText(hjelp);
@@ -183,7 +189,6 @@ public class overvake extends AppCompatActivity  {
 
 //#####     Kaller hente() for nye verdier
                         hente();
-
                     }
                 });
             }
@@ -232,20 +237,16 @@ public class overvake extends AppCompatActivity  {
                     int navnTeller = 0;
                     boolean navn = false;
 
-                    Log.i("******", "OVERVAAKE, INPUTSTREAM FOR WHILE");
-
                     while ((line = bufferedReader.readLine()) != null) {
 
 //#####     Fyller navnListe og brukere med data fra database
                         if (navn) {
                             navnListe.add(line);
-                            Log.i("*******", "HENTER AKTIVE, NAVN: " + navnListe.get(navnTeller));
                             navnTeller++;
                             navn = false;
 
                         } else {
                             brukere.add(line);
-                            Log.i("*******", "HENTER AKTIVE, ID: " + brukere.get(idTeller));
                             idTeller++;
                             navn = true;
                         }
@@ -273,7 +274,6 @@ public class overvake extends AppCompatActivity  {
                         httpURLConnection.setRequestMethod("POST");
                         httpURLConnection.setDoOutput(true);
                         httpURLConnection.setDoInput(true);
-                        Log.i("*******", "OPPRETTET URL: " + httpURLConnection);
 
 //#####     poster data til URL forbindelsen
                         OutputStream outputstream = httpURLConnection.getOutputStream();
@@ -296,7 +296,7 @@ public class overvake extends AppCompatActivity  {
 //*****     Henter her ned data fra databasen. If-settninger for å knytte data til rett vraiabel
                         while ((line = bufferedReader.readLine()) != null) {
 
-                            if(type.equals("EDR")){;
+                            if(type.equals("EDR")){
                                 EDR=line;
                                 type="HR";
                             }
