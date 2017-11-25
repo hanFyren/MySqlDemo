@@ -22,7 +22,7 @@ import android.widget.EditText;
  *
  * Gjennom kommunikasjon med vår database kan du med StressApp:
  * Opprette ny bruker - Registrer.Java
- * Logge inn - MainActivity.java
+ * Innlogging - MainActivity.java
  * Koble til din E4 og se data, samtidig som disse sendes til database - bluetooth.java
  * Overvåke en sanntidslogging - overvake.java
  *
@@ -48,7 +48,9 @@ public class MainActivity extends AppCompatActivity {
 
 //##### Knytter XML elementer til Java variabler
         Brukernavn_et = (EditText)findViewById(R.id.editTextBrukernavn);
+        Brukernavn_et.setHint("Brukernavn");
         Passord_et = (EditText)findViewById(R.id.editTextPassord);
+        Passord_et.setHint("Passord");
     }
 
     public void OnLogin(View view){
@@ -65,10 +67,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void OpenReg(View view){
-//##### Funksjonen kalles fra kanpp, kodet i XML
+//##### Funksjonen kalles fra knapp, kodet i XML
         //Starter ny aktivitet, Registrer
        startActivity(new Intent(this, Registrer.class));
     }
-
-    //ConnectE4 Fjernet herfra og plassert i KobleTil.java
 }

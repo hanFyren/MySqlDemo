@@ -56,7 +56,7 @@ public class KobleTil extends AppCompatActivity{
             @Override
             public void onClick(View view) {
 
-//##### Funksjon om Overvåk trykket
+//##### Funksjon om 'Overvåk' trykket
                 Intent intent = new Intent(context, overvake.class);
                 intent.putExtra("Bruker_ID", bruker_ID);
                 startActivity(intent);
@@ -64,7 +64,7 @@ public class KobleTil extends AppCompatActivity{
         });
     }
 
-//##### funksjon om Logge trykket
+//##### funksjon om 'Logge' trykket
     public void ConnectE4(View view){
 
         // --------------- Sender Bruker_ID til bluetooth.java
