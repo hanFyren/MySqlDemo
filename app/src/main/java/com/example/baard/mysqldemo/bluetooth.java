@@ -73,8 +73,6 @@ bruker_ID = getIntent().getStringExtra("Bruker_ID");
 
 public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, EmpaStatusDelegate {
 
-    public TextView tv_EDR, tv_HR, tv_BVP, tv_aks_x, tv_aks_y, tv_aks_z;
-    public Button pause, avslutt;
     public SeekBar stress;
     public String ID, bruker_ID;
     public Boolean forste;
