@@ -12,21 +12,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 
-//Arnar: Sjekker at git sharing fungerer igjen
-
-//#####         TO DO:          #####
-//
-//#####         Kommentere
-
-
 //#####         Kommentarer markert ##### beskriver programmets funksjonalitet.
 //#####         Kommentarer markert ***** beskriver løsninger som er valgt og hvorfor
 
 
 public class MainActivity extends AppCompatActivity {
-//##### Deklarerer globale variabler
-//***** kun to nødvendig, editText, brukes for å hente innlogingsinformasjon fra bruker
-//      implementering av knapper skjer i XML
+
 
     EditText Brukernavn_et, Passord_et;
 

@@ -24,15 +24,12 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
-import android.support.v7.widget.SwitchCompat;
+
 
 import com.empatica.empalink.ConnectionNotAllowedException;
 import com.empatica.empalink.EmpaDeviceManager;
@@ -72,20 +69,25 @@ bruker_ID = getIntent().getStringExtra("Bruker_ID");
 
 public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, EmpaStatusDelegate {
 
-    public TextView tv_EDR, tv_HR, tv_BVP, tv_aks_x, tv_aks_y, tv_aks_z;
-    public Button pause, avslutt;
+    //Deklarerer verdier som vi kommer til å bruke senere
+
     public SeekBar stress;
     public String ID, bruker_ID;
     public Boolean forste;
+
+    // Skaper en fin liten sirklende ring som skal indikere at appen jobber
     public ProgressBar loggeProgressBar;
 
 
+    // Bluetooth-verdier som gir
     private static final int REQUEST_ENABLE_BT = 1;
     private static final int REQUEST_PERMISSION_ACCESS_COARSE_LOCATION = 1;
 
-    private static final long STREAMING_TIME = 7200000; // Definerer streametid
+    private static final long STREAMING_TIME = 7200000; // Bestemmer hvor lenge appen skal hente
+    // data fra klokken før den terminerer forbindelsen.
 
-    private static final String EMPATICA_API_KEY = "234acf07689e4d2aacfe46bf5b6a816c"; // Dette er vår API-nøkkel
+    private static final String EMPATICA_API_KEY = "234acf07689e4d2aacfe46bf5b6a816c";
+    // Dette er vår API-nøkkel, den er unik for vår klokke
 
     private EmpaDeviceManager deviceManager = null;
 
@@ -112,9 +114,6 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
     public String sendibi;
     public String sendHR;
     public String sendDN;
-
-
-    //--------- Oppretter Backgroundworker
 
 
 
@@ -155,13 +154,14 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
         deviceNameLabel = (TextView) findViewById(R.id.deviceName);
 
 
+        // Finner stressbaren i XML og setter den automatisk uklikkbar og 600 i verdi
         stress = (SeekBar) findViewById(R.id.seekBar);
         stress.setClickable(false);
         stress.setMax(600);
 
         loggPause=(Button) findViewById(R.id.logbtn);
 
-
+        // Setter
         loggeProgressBar = (ProgressBar) findViewById(R.id.progressBar2);
         loggeProgressBar.setVisibility(View.GONE);
 

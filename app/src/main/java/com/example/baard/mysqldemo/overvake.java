@@ -33,6 +33,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 
+
+
 /** Created by Baard 30.10.2017
  *
  * Overvake gir den brukeren veileder mulighet til å overåke andre aktive brukere.
