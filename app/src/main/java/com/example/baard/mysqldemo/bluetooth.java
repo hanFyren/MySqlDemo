@@ -86,8 +86,8 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
     public String sendBvp;
     public String sendBlvl;
     public String sendibi;
-    public String sendHR;
-    public String sendDN;
+    //public String sendHR;
+    //public String sendDN;
 
 
 //#####     Deklarer disse for å opprette en timertask.
@@ -142,20 +142,19 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
         loggPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (fortsett) {
+                if (!fortsett) {
                     stopTimerTask();
-                    fortsett = false;
                     String sett="Logg";
                     loggPause.setText(sett);
                     loggeProgressBar.setVisibility(View.VISIBLE);
                 }
                 else {
                     startTimer();
-                    fortsett = true;
                     String sett1="Pause";
                     loggPause.setText(sett1);
                     loggeProgressBar.setVisibility(View.GONE);
                 }
+                fortsett=!fortsett;
             }
         });
     }
@@ -525,7 +524,7 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
         });
     }
 
-    public void startLogging(View view){
+  /*  public void startLogging(View view){
 
         //ved kalling på startLogging vil Timer starte igjen.
 
@@ -536,7 +535,7 @@ public class bluetooth extends AppCompatActivity implements EmpaDataDelegate, Em
 
         //ved kalling på pauseLogging vil Timer stoppe.
         stopTimerTask();
-    }
+    }*/
 
     public void avsluttLogging(View view){
 
